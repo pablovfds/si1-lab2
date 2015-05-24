@@ -40,15 +40,15 @@ public class Anuncio {
         this.titulo = titulo;
     }
 
-    public String getDescricao() {
+    public String getDescricaoDoAnuncio() {
         return descricao;
     }
 
-    public void setDescricao(String descricao) throws Exception {
+    public void setDescricaoDoAnuncio(String descricao) throws Exception {
         if (descricao == null || descricao.trim() == ""){
-            throw new Exception("Campo n?o foi preenchido: Descri??o do anuncio");
+            throw new Exception("Campo não preenchido: Descrição do anuncio");
         }
-        this.descricao = descricao;
+        this.descricao = descricao.toUpperCase();
     }
 
     public String getCidadeDoAnunciante() {
@@ -57,10 +57,10 @@ public class Anuncio {
 
     public void setCidadeDoAnunciante(String cidadeDoAnunciante) throws Exception {
         if (cidadeDoAnunciante == null || cidadeDoAnunciante.trim() == ""){
-            throw new Exception("Campo n?o foi preenchido: cidade do anunciante");
+            throw new Exception("Campo não preenchido: Cidade do anunciante");
         }
 
-        this.cidadeDoAnunciante = cidadeDoAnunciante;
+        this.cidadeDoAnunciante = cidadeDoAnunciante.toUpperCase();
     }
 
     public String getBairroDoAnunciante() {
@@ -69,20 +69,21 @@ public class Anuncio {
 
     public void setBairroDoAnunciante(String bairroDoAnunciante) throws Exception {
         if (bairroDoAnunciante == null || bairroDoAnunciante.trim() == ""){
-            throw new Exception("Campo n?o foi preenchido: bairro do anunciante");
+            throw new Exception("Campo não preenchido: bairro do anunciante");
         }
 
-        this.bairroDoAnunciante = bairroDoAnunciante;
+        this.bairroDoAnunciante = bairroDoAnunciante.toUpperCase();
     }
 
     public List<String> getListaDeInstrumentosQueOAnuncianteToca() {
         return listaDeInstrumentosQueOAnuncianteToca;
     }
 
-    public void setInstrumentosQueOAnuncianteToca(String instrumentosQueOAnuncianteToca) {
-        if (instrumentosQueOAnuncianteToca != null) {
-            listaDeInstrumentosQueOAnuncianteToca.add(instrumentosQueOAnuncianteToca);
+    public void setInstrumentosQueOAnuncianteToca(String instrumentosQueOAnuncianteToca) throws Exception {
+        if (instrumentosQueOAnuncianteToca == null || instrumentosQueOAnuncianteToca.trim() == "") {
+            throw new Exception("Campo não preenchido: Instrumentos que o anunciante toca");
         }
+        listaDeInstrumentosQueOAnuncianteToca.add(instrumentosQueOAnuncianteToca.toUpperCase());
     }
 
     public List<String> getEstilosQueAnuncianteGosta() {

@@ -3,8 +3,6 @@ package modelsTest;
 import models.Anuncio;
 import org.junit.*;
 
-import java.util.Arrays;
-
 /**
  * Created by PabloVictor on 23/05/2015.
  */
@@ -134,4 +132,108 @@ public class anuncioTest {
         }
     }
 
+    @Test
+    public void testaInstrumentosQueOAnuncianteToca(){
+        anuncio = new Anuncio();
+
+        Assert.assertTrue(anuncio.getListaDeInstrumentosQueOAnuncianteToca().size() == 0);
+        try {
+            anuncio.setInstrumentosQueOAnuncianteToca("");
+        } catch (Exception e) {
+            Assert.assertEquals("Campo não preenchido: Instrumentos que o anunciante toca", e.getMessage());
+        }
+        Assert.assertTrue(anuncio.getListaDeInstrumentosQueOAnuncianteToca().size() == 0);
+        try {
+            anuncio.setInstrumentosQueOAnuncianteToca(null);
+        } catch (Exception e) {
+            Assert.assertEquals("Campo não preenchido: Instrumentos que o anunciante toca", e.getMessage());
+        }
+        Assert.assertTrue(anuncio.getListaDeInstrumentosQueOAnuncianteToca().size() == 0);
+        try {
+            anuncio.setInstrumentosQueOAnuncianteToca("Baixo");
+            Assert.assertTrue(anuncio.getListaDeInstrumentosQueOAnuncianteToca().size() == 1);
+            Assert.assertEquals("BAIXO", anuncio.getListaDeInstrumentosQueOAnuncianteToca().get(0));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void testaBairroDoAnunciante(){
+        anuncio = new Anuncio();
+        Assert.assertEquals(null, anuncio.getBairroDoAnunciante());
+
+        try {
+            anuncio.setBairroDoAnunciante("");
+        } catch (Exception e) {
+            Assert.assertEquals("Campo não preenchido: bairro do anunciante", e.getMessage());
+        }
+        Assert.assertEquals(null, anuncio.getBairroDoAnunciante());
+        try {
+            anuncio.setBairroDoAnunciante(null);
+        } catch (Exception e) {
+            Assert.assertEquals("Campo não preenchido: bairro do anunciante", e.getMessage());
+        }
+        Assert.assertEquals(null, anuncio.getBairroDoAnunciante());
+
+        try {
+            anuncio.setBairroDoAnunciante("Bairro Azul");
+            Assert.assertEquals("BAIRRO AZUL", anuncio.getBairroDoAnunciante());
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void testaCidadeDoAnunciante(){
+        anuncio = new Anuncio();
+        Assert.assertEquals(null, anuncio.getCidadeDoAnunciante());
+
+        try {
+            anuncio.setCidadeDoAnunciante("");
+        } catch (Exception e) {
+            Assert.assertEquals("Campo não preenchido: Cidade do anunciante", e.getMessage());
+        }
+        Assert.assertEquals(null, anuncio.getCidadeDoAnunciante());
+        try {
+            anuncio.setCidadeDoAnunciante(null);
+        } catch (Exception e) {
+            Assert.assertEquals("Campo não preenchido: Cidade do anunciante", e.getMessage());
+        }
+        Assert.assertEquals(null, anuncio.getCidadeDoAnunciante());
+
+        try {
+            anuncio.setCidadeDoAnunciante("Cidade Azul");
+            Assert.assertEquals("CIDADE AZUL", anuncio.getCidadeDoAnunciante());
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void testaDescricao(){
+        anuncio = new Anuncio();
+
+        Assert.assertEquals(null, anuncio.getDescricaoDoAnuncio());
+
+        try {
+            anuncio.setDescricaoDoAnuncio("");
+        } catch (Exception e) {
+            Assert.assertEquals("Campo não preenchido: Descrição do anuncio", e.getMessage());
+        }
+        Assert.assertEquals(null, anuncio.getDescricaoDoAnuncio());
+        try {
+            anuncio.setDescricaoDoAnuncio(null);
+        } catch (Exception e) {
+            Assert.assertEquals("Campo não preenchido: Descrição do anuncio", e.getMessage());
+        }
+        Assert.assertEquals(null, anuncio.getDescricaoDoAnuncio());
+
+        try {
+            anuncio.setDescricaoDoAnuncio("Descrição Teste");
+            Assert.assertEquals("DESCRIÇÃO TESTE", anuncio.getDescricaoDoAnuncio());
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
 }
