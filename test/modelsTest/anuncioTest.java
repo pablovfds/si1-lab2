@@ -89,6 +89,7 @@ public class anuncioTest {
     @Test
     public void testaEstilosQueAnuncianteNaoGosta(){
         anuncio = new Anuncio();
+
         Assert.assertTrue(anuncio.getEstilosQueAnuncianteNaoGosta().size() == 0);
 
         try {
