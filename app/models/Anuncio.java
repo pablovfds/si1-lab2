@@ -8,7 +8,7 @@ import java.util.List;
  */
 public class Anuncio {
 
-    private String descricao;
+    private String descricaoDoAnuncio;
     private String cidadeDoAnunciante;
     private String bairroDoAnunciante;
     private List<String> listaDeInstrumentosQueOAnuncianteToca;
@@ -34,21 +34,21 @@ public class Anuncio {
     }
 
     public void setTitulo(String titulo) throws Exception {
-        if (titulo == null || titulo.trim() == ""){
+        if (titulo == null || titulo.trim().equals("")){
             throw new Exception("Campo n?o foi preenchido: Titulo do anuncio");
         }
         this.titulo = titulo;
     }
 
     public String getDescricaoDoAnuncio() {
-        return descricao;
+        return descricaoDoAnuncio;
     }
 
     public void setDescricaoDoAnuncio(String descricao) throws Exception {
-        if (descricao == null || descricao.trim() == ""){
+        if (descricao == null || descricao.trim().equals("")){
             throw new Exception("Campo não preenchido: Descrição do anuncio");
         }
-        this.descricao = descricao.toUpperCase();
+        this.descricaoDoAnuncio = descricao.toUpperCase();
     }
 
     public String getCidadeDoAnunciante() {
@@ -56,7 +56,7 @@ public class Anuncio {
     }
 
     public void setCidadeDoAnunciante(String cidadeDoAnunciante) throws Exception {
-        if (cidadeDoAnunciante == null || cidadeDoAnunciante.trim() == ""){
+        if (cidadeDoAnunciante == null || cidadeDoAnunciante.trim().equals("")){
             throw new Exception("Campo não preenchido: Cidade do anunciante");
         }
 
@@ -68,7 +68,7 @@ public class Anuncio {
     }
 
     public void setBairroDoAnunciante(String bairroDoAnunciante) throws Exception {
-        if (bairroDoAnunciante == null || bairroDoAnunciante.trim() == ""){
+        if (bairroDoAnunciante == null || bairroDoAnunciante.trim().equals("")){
             throw new Exception("Campo não preenchido: bairro do anunciante");
         }
 
@@ -80,7 +80,7 @@ public class Anuncio {
     }
 
     public void setInstrumentosQueOAnuncianteToca(String instrumentosQueOAnuncianteToca) throws Exception {
-        if (instrumentosQueOAnuncianteToca == null || instrumentosQueOAnuncianteToca.trim() == "") {
+        if (instrumentosQueOAnuncianteToca == null || instrumentosQueOAnuncianteToca.trim().equals("")) {
             throw new Exception("Campo não preenchido: Instrumentos que o anunciante toca");
         }
         listaDeInstrumentosQueOAnuncianteToca.add(instrumentosQueOAnuncianteToca.toUpperCase());
@@ -91,7 +91,7 @@ public class Anuncio {
     }
 
     public void setEstilosQueAnuncianteGosta(String estilosQueEleGosta) {
-        if (!estilosQueEleGosta.equals(null)) {
+        if (estilosQueEleGosta != null) {
             listaDeEstilosQueAnuncianteGosta.add(estilosQueEleGosta);
         }
     }
@@ -111,7 +111,7 @@ public class Anuncio {
 
     public String getOpcaoDeTocarOcasionalmente() {
         if (opcaoDeTocarOcasionalmente == null) {
-            return opcaoDeTocarOcasionalmente;
+            return null;
         }
         return opcaoDeTocarOcasionalmente.toUpperCase();
     }
@@ -142,8 +142,8 @@ public class Anuncio {
     }
 
     public void setContato(String contatoEmail, String contatoFacebook) throws Exception {
-        if ((contatoEmail == null || contatoEmail.trim() == "") &&
-                (contatoFacebook == null || contatoFacebook.trim() == "") ){
+        if ((contatoEmail == null || contatoEmail.trim().equals("")) &&
+                (contatoFacebook == null || contatoFacebook.trim().equals(""))){
             throw new Exception("Preencha ao menos um campo para contato");
         }
 
