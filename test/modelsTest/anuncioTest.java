@@ -190,48 +190,21 @@ public class anuncioTest {
         Assert.assertEquals(null, anuncio.getCidadeDoAnunciante());
 
         try {
-            anuncio.setCidadeDoAnunciante("");
+            anuncio.setBairroDoAnunciante("");
         } catch (Exception e) {
-            Assert.assertEquals("Campo não preenchido: Cidade do anunciante", e.getMessage());
+            Assert.assertEquals("Campo não foi preenchido: Cidade do anunciante", e.getMessage());
         }
         Assert.assertEquals(null, anuncio.getCidadeDoAnunciante());
         try {
-            anuncio.setCidadeDoAnunciante(null);
+            anuncio.setBairroDoAnunciante(null);
         } catch (Exception e) {
-            Assert.assertEquals("Campo não preenchido: Cidade do anunciante", e.getMessage());
+            Assert.assertEquals("Campo não foi preenchido: Cidade do anunciante", e.getMessage());
         }
         Assert.assertEquals(null, anuncio.getCidadeDoAnunciante());
 
         try {
-            anuncio.setCidadeDoAnunciante("Cidade Azul");
+            anuncio.setBairroDoAnunciante("Cidade Azul");
             Assert.assertEquals("CIDADE AZUL", anuncio.getCidadeDoAnunciante());
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-    }
-
-    @Test
-    public void testaDescricao(){
-        anuncio = new Anuncio();
-
-        Assert.assertEquals(null, anuncio.getDescricaoDoAnuncio());
-
-        try {
-            anuncio.setDescricaoDoAnuncio("");
-        } catch (Exception e) {
-            Assert.assertEquals("Campo não preenchido: Descrição do anuncio", e.getMessage());
-        }
-        Assert.assertEquals(null, anuncio.getDescricaoDoAnuncio());
-        try {
-            anuncio.setDescricaoDoAnuncio(null);
-        } catch (Exception e) {
-            Assert.assertEquals("Campo não preenchido: Descrição do anuncio", e.getMessage());
-        }
-        Assert.assertEquals(null, anuncio.getDescricaoDoAnuncio());
-
-        try {
-            anuncio.setDescricaoDoAnuncio("Descrição Teste");
-            Assert.assertEquals("DESCRIÇÃO TESTE", anuncio.getDescricaoDoAnuncio());
         }catch (Exception e){
             e.printStackTrace();
         }
