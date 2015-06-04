@@ -4,6 +4,8 @@ import java.util.List;
 
 import models.entity.Anuncio;
 
+import javax.persistence.Query;
+
 public class RepositorioDeAnuncios extends GenericRepository<Anuncio> {
 	
 	private static RepositorioDeAnuncios instance;
@@ -16,10 +18,18 @@ public class RepositorioDeAnuncios extends GenericRepository<Anuncio> {
 		if(instance == null) {
 			instance = new RepositorioDeAnuncios();
 		}
+
 		return instance;
 	}
-	
-	public List<Anuncio> findByTitle(String title) {
-		return null;
+
+	public List<Anuncio> findByAttributeName(String attributeValue) {
+		String hql = "FROM " + "anuncio" + " c" + " WHERE c."
+				+ "titulo" + " = '" + attributeValue + "' or "
+				+ "descricao" + " = '" + attributeValue + "' or "
+				+ "buscaPor" + " = '" + attributeValue + "' or "
+				+ "estilosQueGosta" + " = '" + attributeValue + "' or "
+				+ "estilosQueNaoGosta" + " = '" + attributeValue + "'";
+		Query query = getEm().createQuery(hql);
+		return query.getResultList();
 	}
 }

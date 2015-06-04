@@ -25,6 +25,10 @@ public abstract class GenericRepository<T> {
 		this.entity = entity;
 	}
 
+	public Class<T> getEntity() {
+		return entity;
+	}
+
 	/**
 	 * Persiste uma entidade no Banco de Dados.
 	 */
