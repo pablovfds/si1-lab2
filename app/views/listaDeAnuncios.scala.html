@@ -1,28 +1,25 @@
-@(anuncios: List[models.entity.Anuncio])
-<!DOCTYPE html>
-<html>
-    
-    <head lang="pt-BR">
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>Música Boa - Lista de Anúncios</title>
-        <meta name="description" content="">
-        <link href="../../public/stylesheets/bootstrap.css" rel="stylesheet">
-        <link rel="stylesheet" href="../../public/stylesheets/bootstrap.min.css">
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-        <script src="../../public/javascripts/bootstrap.min.js"></script>
-        <link rel="icon" href="../../public/images/imagem1.jpg">
+@import models.entity.Anuncio
+@(anuncios: List[Anuncio])
 
-        <style type="text/css">
-        <!--
+<!DOCTYPE html>
+
+<html>
+
+<head lang="pt-BR">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Música Boa - Lista de Anúncios</title>
+    <meta name="description" content="">
+
+    <link rel="stylesheet" type="text/css" href=@routes.Assets.at("stylesheets/bootstrap.css")>
+    <link rel="stylesheet" type="text/css" href=@routes.Assets.at("stylesheets/bootstrap.min.css")>
+    <script src=@routes.Assets.at("javascripts/jquery.js")></script>
+    <link rel="shortcut icon" href=@routes.Assets.at("images/imagem1.jpg") type="image/jpg">
+
+    <style type="text/css">
         table {
             width:760px;
             _width:760px;
-        }
-        #celula1 {
-            width: 100px;
-            padding:10px;
-            _width: 255px;
         }
         #celula2 {
             width: 720px;
@@ -34,138 +31,112 @@
             padding: 10px;
             _width: 255px;
         }
-        </style>
-    </head>
-    
-    <body background="../../public/images/imagem2.jpg">
+    </style>
 
-        <div class="section">
-            <div class="container">
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="section">
-                            <div class="container">
-                                <div class="row">
-                                    <div class="col-md-12">
-                                        <div class="hidden-md navbar navbar-default navbar-fixed-top navbar-inverse">
-                                            <div class="container">
-                                                <div class="navbar-header">
-                                                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-ex-collapse">
-                                                        <span class="sr-only">Toggle navigation</span>
-                                                        <span class="icon-bar"></span>
-                                                        <span class="icon-bar"></span>
-                                                        <span class="icon-bar"></span>
-                                                    </button>
-                                                    <a class="navbar-brand" href="index.escala.html">Música Boa</a>
-                                                </div>
-                                                <div class="collapse navbar-collapse" id="navbar-ex-collapse">
-                                                    <ul class="nav navbar-nav navbar-right">
-                                                        <li id="home">
-                                                            <a href="index.escala.html">Página Inicial</a>
-                                                        </li>
-                                                        <li id="buttonCriarAnuncio">
-                                                            <a href="criarAnuncio.scala.html">Criar Anúncio<br></a>
-                                                        </li>
-                                                        <li id="buttonListaAnuncio">
-                                                            <a href="listaDeAnuncios.scala.html">Lista de Anúncios<br></a>
-                                                        </li>
-                                                    </ul>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <br>
-                                <br>
+</head>
+
+<body background=@routes.Assets.at("images/imagem2.jpg")>
+    <div class="section">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="hidden-md navbar navbar-default navbar-fixed-top navbar-inverse">
+                        <div class="container">
+                            <div class="navbar-header">
+                                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-ex-collapse">
+                                    <span class="sr-only">Toggle navigation</span>
+                                    <span class="icon-bar"></span>
+                                    <span class="icon-bar"></span>
+                                    <span class="icon-bar"></span>
+                                </button>
+                                <a class="navbar-brand" href=@routes.Application.index()>"Música Boa"</a>
+                            </div>
+                            <div class="collapse navbar-collapse" id="navbar-ex-collapse">
+                                <ul class="nav navbar-nav navbar-right">
+                                    <li>
+                                        <a href=@routes.Application.index()>Página Inicial</a>
+                                    </li>
+                                    <li>
+                                        <a href=@routes.Application.criarAnuncio()>Criar Anúncio</a>
+                                    </li>
+                                    <li>
+                                        <a href=@routes.Application.listaDeAnuncios()>Lista de Anúncios</a>
+                                    </li>
+                                </ul>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+            <br>
+            <br>
         </div>
-        <div class="section">
-            <div class="container">
-                <div class="row">
+    </div>
+    <div class="section">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="well">
+                        <h2 contenteditable="true" class="text-center">Lista de Anúncios</h2>
+                    </div>
                     <div class="col-md-12">
-                        <div class="well">
-                            <h2 contenteditable="true" class="text-center">Lista de Anúncios</h2>
-                        </div>
-                        <div class="col-md-12">
-                            <div class="row">
-                                <div class="col-md-12 well">
-                                    <form class="form-horizontal" role="form">
-                                        <div class="form-group">
-                                            <div class="col-md-18">
-                                                <div class="col-md-10">
-                                                    <input type="text" class="form-control input-lg" id="inputPesquisa" placeholder="Digite aqui os dados do anúncio">
-                                                </div>
-                                                <button type="submit" class="btn btn-lg btn-primary">Pesquisar</button>
+                        <div class="row">
+                            <div class="col-md-12 well">
+                                <form class="form-horizontal" role="form">
+                                    <div class="form-group">
+                                        <div class="col-md-18">
+                                            <div class="col-md-10">
+                                                <input type="text" class="form-control input-lg" id="inputPesquisa" placeholder="Digite aqui os dados do anúncio">
                                             </div>
+                                            <button type="submit" href="" class="btn btn-lg btn-primary">Pesquisar</button>
                                         </div>
-                                        <div class="col-md-2">
-                                            <label class="control-label">Pesquisar por:</label>
-                                        </div>
-                                        <div class="form-group">
-                                            <label class="checkbox-inline">
-                                                <input type="checkbox" value="estilo" name="pesquisa">Estilo</label>
-                                            <label class="checkbox-inline">
-                                                <input type="checkbox" value="palavra-chave" name="pesquisa">Palavra-chave</label>
-                                            <label class="checkbox-inline">
-                                                <input type="checkbox" value="instrumento" name="pesquisa">Instrumento</label>
-                                            <label class="checkbox-inline">
-                                                <input type="checkbox" value="tocarOcasionalmente" name="pesquisa">Tocar ocasionalmente</label>
-                                            <label class="checkbox-inline">
-                                                <input type="checkbox" value="formarBanda" name="pesquisa">Formar banda</label>
-                                        </div>
-                                    </form>
-                                </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="control-label">Pesquisar por:</label>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="checkbox-inline">
+                                            <input type="checkbox" value="estilo" name="pesquisa">Estilo da música</label>
+                                        <label class="checkbox-inline">
+                                            <input type="checkbox" value="palavraChave" name="pesquisa">Palavra-chave</label>
+                                        <label class="checkbox-inline">
+                                            <input type="checkbox" value="instrumentos" name="pesquisa">Instrumento</label>
+                                        <label class="checkbox-inline">
+                                            <input type="checkbox" value="Torcar Ocasionalmente" name="pesquisa">Tocar ocasionalmente</label>
+                                        <label class="checkbox-inline">
+                                            <input type="checkbox" value="Formar uma banda" name="pesquisa">Formar banda</label>
+                                    </div>
+                                </form>
                             </div>
                         </div>
-                        <table class="table table-striped">
-                            <tbody>
+                    </div>
+                    <table class="table table-striped">
+                        <tbody>
+                            @for(anuncio <- anuncios){
                                 <tr>
-                                    <!-- Preencher com instrumentos @for(anuncio <- anuncios){
-                                    <td class="active" id="celula1" value="sty_@anuncio.getId()">@anuncio.getId</td>
-                                    <td class="active" id="celula2" value="sty_@anuncio.getId()">
+                                    <td class="active" id="celula2" value=@anuncio.getId()>
                                         <h4>Titulo: @anuncio.getTitulo</h4>
                                         <p>Descrição: @anuncio.getDescricao</p>
                                     </td>
-                                }-->
-                                    <td class="active" id="celula1">1</td>
-                                    <td class="active" id="celula2">
-                                        <h4>Titulo:</h4>
-                                        <p>Descrição:</p>
-                                    </td>
                                     <td class="active" id="celula3">
-                                        <a href="verAnuncio.scala.html" class="btn btn-block btn-primary" role="button"
-                                        name="verAnuncio">Ver anúncio completo</a>
+                                        <button class="btn btn-block btn-primary" href="@routes.Application.verAnuncio(anuncio.getId)" type="submit" name="verAnuncio" >Ver anúncio completo</button>
                                     </td>
                                 </tr>
-                                <tr>
-                                    <td class="active" id="celula1">2</td>
-                                    <td class="active" id="celula2">
-                                        <h4>Título:</h4>
-                                        <p>Descrição:</p>
-                                    </td>
-                                    <td class="active" id="celula3">
-                                        <button class="btn btn-block btn-primary" type="button" name="verAnuncio">Ver anúncio completo</button>
-                                    </td>
-                                </tr>
-                                <tr></tr>
-                                <tr></tr>
-                            </tbody>
-                            <thead>
-                                <tr>
-                                    <th class="active">#</th>
-                                    <th class="active">Anúncio</th>
-                                    <th class="active">Opções</th>
-                                </tr>
-                            </thead>
-                        </table>
-                    </div>
+                            }
+                        <tr></tr>
+                        <tr></tr>
+                        </tbody>
+                        <thead>
+                        <tr>
+                            <th class="active">Anúncio</th>
+                            <th class="active">Opções</th>
+                        </tr>
+                        </thead>
+                    </table>
                 </div>
             </div>
         </div>
-    </body>
+    </div>
+</body>
 
 </html>
