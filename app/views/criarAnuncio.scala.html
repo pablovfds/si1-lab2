@@ -1,195 +1,193 @@
-@(estilos: List[models.entity.Estilo], instrumentos: List[models.entity.Instrumento])
+@import models.entity.Estilo
+@import models.entity.Instrumento
+@(estilos: List[Estilo], instrumentos: List[Instrumento])
 
 <!DOCTYPE html>
+
 <html>
-
-
-    <head lang="pt-BR">
+    <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>Música Boa - Criar Anúncio</title>
+        <title>MÃºsica Boa - Criar AnÃºncio</title>
         <meta name="description" content="">
-
-        <link href="../../public/stylesheets/bootstrap.css" rel="stylesheet">
-        <link rel="stylesheet" href="../../public/stylesheets/bootstrap.min.css">
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-        <script src="../../public/javascripts/bootstrap.min.js"></script>
-
-        <link rel="icon" href="../../public/images/imagem1.jpg">
+        <link rel="stylesheet" type="text/css" href=@routes.Assets.at("stylesheets/bootstrap.css")>
+        <link rel="stylesheet" type="text/css" href=@routes.Assets.at("stylesheets/bootstrap.min.css")>
+        <script src=@routes.Assets.at("javascripts/jquery.js")></script>
+        <link rel="shortcut icon" href=@routes.Assets.at("images/imagem1.jpg") type="image/jpg">
     </head>
 
-    <body background="../../public/images/imagem6.jpg">
+    <body background=@routes.Assets.at("images/imagem6.jpg")>
         <div class="section">
             <div class="container">
                 <div class="row">
                     <div class="col-md-12">
-                        <div class="section">
+                        <div class="hidden-md navbar navbar-default navbar-fixed-top navbar-inverse">
                             <div class="container">
-                                <div class="row">
-                                    <div class="col-md-12">
-                                        <div class="hidden-md navbar navbar-default navbar-fixed-top navbar-inverse">
-                                            <div class="container">
-                                                <div class="navbar-header">
-                                                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-ex-collapse">
-                                                        <span class="sr-only">Toggle navigation</span>
-                                                        <span class="icon-bar"></span>
-                                                        <span class="icon-bar"></span>
-                                                        <span class="icon-bar"></span>
-                                                    </button>
-                                                    <a class="navbar-brand" href="index.escala.html">Música Boa</a>
-                                                </div>
-                                                <div class="collapse navbar-collapse" id="navbar-ex-collapse">
-                                                    <ul class="nav navbar-nav navbar-right">
-                                                        <li id="home">
-                                                            <a href="index.escala.html">Página Inicial</a>
-                                                        </li>
-                                                        <li id="buttonCriarAnuncio">
-                                                            <a href="criarAnuncio.scala.html">Criar Anúncio<br></a>
-                                                        </li>
-                                                        <li id="buttonListaAnuncio">
-                                                            <a href="listaDeAnuncios.scala.html">Lista de Anúncios<br></a>
-                                                        </li>
-                                                    </ul>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
+                                <div class="navbar-header">
+                                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-ex-collapse">
+                                        <span class="sr-only">Toggle navigation</span>
+                                        <span class="icon-bar"></span>
+                                        <span class="icon-bar"></span>
+                                        <span class="icon-bar"></span>
+                                    </button>
+                                    <a class="navbar-brand" href="@routes.Application.index()">MÃºsica Boa</a>
                                 </div>
-                                <br>
-                                <br>
-                                <div class="row">
-                                    <div class="col-md-13">
-                                        <div class="text-center text-rigth well">
-                                            <h2>Criar Anuncio</h2>
-                                            <p>Nesta página você poderá criar o seu anúncio que será postado na lista de
-                                                anúncios da página.</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="row text-left">
-                                    <div class="col-md-13">
-                                        <form class="form-horizontal well" role="form">
-                                            <br>
-                                            <div class="form-group">
-                                                <div class="col-sm-2">
-                                                    <label class="control-label">Título:</label>
-                                                </div>
-                                                <div class="col-sm-10">
-                                                    <input type="text" class="form-control" id="titulo" placeholder="Digite o título do anúncio">
-                                                </div>
-                                            </div>
-                                            <br>
-                                            <div class="form-group">
-                                                <div class="col-sm-2">
-                                                    <label class="control-label">Descrição:</label>
-                                                </div>
-                                                <div class="col-sm-10">
-                                                    <textarea class="form-control" id="descricao" placeholder="Digite a descrição do anúncio"></textarea>
-                                                </div>
-                                            </div>
-                                            <br>
-                                            <div class="form-group">
-                                                <div class="col-sm-2">
-                                                    <label class="control-label">Cidade:</label>
-                                                </div>
-                                                <div class="col-sm-10">
-                                                    <input type="text" class="form-control" id="cidade" placeholder="Digite a cidade do anunciante">
-                                                </div>
-                                            </div>
-                                            <br>
-                                            <div class="form-group">
-                                                <div class="col-sm-2">
-                                                    <label class="control-label">Bairro:</label>
-                                                </div>
-                                                <div class="col-sm-10">
-                                                    <input type="text" class="form-control" id="bairro" placeholder="Digite o bairro do anuciante">
-                                                </div>
-                                            </div>
-                                            <br>
-                                            <div class="form-group">
-                                                <div class="col-sm-2">
-                                                    <label class="control-label">Busco:</label>
-                                                </div>
-                                                <div class="col-sm-10">
-                                                    <label class="radio-inline">
-                                                        <input type="radio" name="opcaoBusca" id="opcaoBuscaBanda" value="Formar uma banda" checked required>Formar uma banda
-                                                    </label>
-                                                    <label class="radio-inline">
-                                                        <input type="radio" name="opcaoBusca" id="opcaoTocarOcasionalmente" value="Torcar Ocasionalmente" required>
-                                                        Tocar ocasionalmente
-                                                    </label>
-                                                </div>
-                                            </div>
-                                            <br>
-                                            <div class="form-group">
-                                                <div class="col-sm-2">
-                                                    <label class="control-label">Instrumentos que toco:</label>
-                                                </div>
-                                                <div class="col-sm-5">
-                                                    <select class="form-control multiselect" id="instrumentosQueToco" name="instrumentosQueToco" multiple="multiple">
-                                                            <!-- Preencher com instrumentos
-                                                     @for(estilo <- estilos){
-                                                        <option value="sty_@estilo.getId()">@estilo.getNome()</option>
-                                                    }
-                                                        -->
-                                                    </select>
-                                                </div>
-                                            </div>
-                                            <br>
-                                            <div class="form-group">
-                                                <div class="col-sm-2">
-                                                    <label class="control-label">Estilos que gosto de tocar:
-                                                        <br>
-                                                    </label>
-                                                </div>
-                                                <div class="col-sm-5">
-                                                    <select class="form-control multiselect" id="estilosQueGosto" name="instrumentosQueNaoGosto" multiple="multiple">
-                                                            <!-- Preencher com estilos que gosto
-                                                     @for(instrumento <- instrumentos){
-                                                        <option value="inst_@instrumento.getId()">@instrumento.getNome()</option>
-                                                    }
-                                                        -->
-                                                    </select>
-                                                </div>
-                                            </div>
-                                            <br>
-                                            <div class="form-group">
-                                                <div class="col-sm-2">
-                                                    <label class="control-label">Estilos que não gosto de tocar:</label>
-
-                                                </div>
-                                                <div class="col-sm-5">
-                                                    <select class="form-control multiselect" id="estilosQueNaoGosto" name="instrumentosQueNaoGosto" multiple="multiple">
-                                                            <!-- Preencher com estilos que nao gosto
-                                                     @for(estilo <- estilos){
-                                                        <option value="sty_@estilo.getId()">@estilo.getNome()</option>
-                                                    }
-                                                        -->
-                                                    </select>
-                                                </div>
-                                            </div>
-                                            <br>
-                                            <div class="form-group">
-                                                <div class="col-sm-2">
-                                                    <label class="control-label hidden-md hidden-sm" contenteditable="true">Palavra-chave</label>
-                                                </div>
-                                                <div class="col-sm-7">
-                                                    <input type="password" class="form-control" placeholder="Digite a palavra-chave que será associada ao anuncio">
-                                                </div>
-                                            </div>
-                                            <br>
-                                            <button class="btn btn-large btn-block btn-primary" type="button">Criar Anúncio</button>
-
-                                        </form>
-
-                                    </div>
+                                <div class="collapse navbar-collapse" id="navbar-ex-collapse">
+                                    <ul class="nav navbar-nav navbar-right">
+                                        <li id="home">
+                                            <a href="@routes.Application.index()">PÃ¡gina Inicial</a>
+                                        </li>
+                                        <li id="buttonCriarAnuncio">
+                                            <a href="@routes.Application.criarAnuncio()">Criar AnÃºncio<br></a>
+                                        </li>
+                                        <li id="buttonListaAnuncio">
+                                            <a href="@routes.Application.listaDeAnuncios()">Lista de AnÃºncios<br></a>
+                                        </li>
+                                    </ul>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
+                <br>
+                <br>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="text-center text-rigth well">
+                            <h2>Criar AnÃºncio</h2>
+                            <p>Nesta pÃ¡gina vocÃª poderÃ¡ criar o seu anÃºncio que serÃ¡ postado na lista
+                                de anÃºncios da pÃ¡gina.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="row text-left">
+                    <div class="col-md-12">
+                        <form class="form-horizontal well" role="form">
+                            <legend>InformaÃ§Ãµes do anÃºncio</legend>
+                            <div class="form-group">
+                                <div class="col-sm-2">
+                                    <label class="control-label">TÃ­tulo:</label>
+                                </div>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" name="titulo"
+                                     placeholder="Digite o tÃ­tulo do anÃºncio" required>
+                                </div>
+                            </div>
+                            <br>
+                            <div class="form-group">
+                                <div class="col-sm-2">
+                                    <label class="control-label">DescriÃ§Ã£o:</label>
+                                </div>
+                                <div class="col-sm-10">
+                                    <textarea class="form-control" name="descricao"
+                                     placeholder="Digite a descriÃ§Ã£o do anÃºncio" required></textarea>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-sm-2">
+                                    <label class="control-label hidden-md hidden-sm" contenteditable="true">Palavra-chave</label>
+                                </div>
+                                <div class="col-sm-7">
+                                    <input type="password" name="codigoDoAnuncio"
+                                     class="form-control" placeholder="Insira uma chave para o anuncio" required>
+                                </div>
+                            </div>
+                            <br>
+                            <legend>InformaÃ§Ãµes sobre o anunciante</legend>
+                            <div class="form-group">
+                                <div class="col-sm-2">
+                                    <label class="control-label">E-mail:</label>
+                                </div>
+                                <div class="col-sm-10">
+                                    <input type="email" class="form-control" name="email"
+                                     placeholder="Exemplo: exemploexemplo.com" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-sm-2">
+                                    <label class="control-label">Facebook:</label>
+                                </div>
+                                <div class="col-sm-10">
+                                    <input type="url" class="form-control" name="perfilDoFacebook"
+                                     placeholder="Perfil do Facebook" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-sm-2">
+                                    <label class="control-label">Cidade:</label>
+                                </div>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" name="cidade"
+                                     placeholder="Digite a cidade do anunciante" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-sm-2">
+                                    <label class="control-label">Bairro:</label>
+                                </div>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" name="bairro"
+                                     placeholder="Digite o bairro do anuciante" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-sm-2">
+                                    <label class="control-label">Busco:</label>
+                                </div>
+                                <div class="col-sm-10">
+                                    <label class="radio-inline">
+                                        <input type="radio" name="opcaoDeBusca" value="Formar uma banda"
+                                        checked="" required>Formar uma banda</label>
+                                    <label class="radio-inline">
+                                        <input type="radio" name="opcaoDeBusca" value="Torcar Ocasionalmente"
+                                        required>Tocar ocasionalmente</label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-sm-3">
+                                    <label class="control-label">Instrumentos que toco:</label>
+                                </div>
+                                <div class="col-sm-5">
+                                    <select class="form-control multiselect" name="instrumentos" multiple="multiple" required>
+                                        @for(instrumento <- instrumentos){
+                                            <option value="@instrumento.getId()">@instrumento.getNomeDoInstrumento()</option>
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-sm-3">
+                                    <label class="control-label">Estilos que gostaria de tocar:</label>
+                                </div>
+                                <div class="col-sm-5">
+                                    <select class="form-control multiselect" name="estilosQueGosto" multiple="multiple">
+                                        @for(estilo <- estilos){
+                                            <option value="@estilo.getId()">@estilo.getNomeDoEstilo()</option>
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-sm-3">
+                                    <label class="control-label">Estilos que nÃ£o gostaria de tocar:</label>
+                                </div>
+                                <div class="col-sm-5">
+                                    <select class="form-control multiselect" name="estilosQueNaoGosto" multiple="multiple">
+                                        @for(estilo <- estilos){
+                                            <option value="@estilo.getId()">@estilo.getNomeDoEstilo()</option>
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+                            <legend></legend>
+                            <form action="@routes.Application.novoAnuncio()" method="post">
+                                <input type="submit" class="btn btn-block btn-primary" value="Criar anÃºncio">
+                            </form>
+                        </form>
+                    </div>
+                </div>
             </div>
         </div>
-
     </body>
+
 </html>
