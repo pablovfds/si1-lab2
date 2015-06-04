@@ -1,14 +1,27 @@
 package controllers;
 
+import models.entity.*;
 import models.repository.RepositorioDeAnuncios;
-import models.repository.RepositorioDeInstrumentos;
 import models.repository.RepositorioDeEstilos;
+import models.repository.RepositorioDeInstrumentos;
+import play.Logger;
+import play.data.Form;
 import play.db.jpa.Transactional;
 import play.mvc.Controller;
 import play.mvc.Result;
 import views.html.*;
 
+import java.util.*;
+
 public class Application extends Controller {
+
+    static Form<Anuncio> anuncioForm = Form.form(Anuncio.class);
+    private static List<Anuncio> anuncioList;
+    private static List<Instrumento> instrumentoList;
+    private static List<Estilo> estiloList;
+    private static RepositorioDeAnuncios repositorioDeAnuncios;
+    private static RepositorioDeEstilos repositorioDeEstilos;
+    private static RepositorioDeInstrumentos repositorioDeInstrumentos;
 
     @Transactional
     public static Result index() {
@@ -17,144 +30,127 @@ public class Application extends Controller {
 
     @Transactional
     public static Result criarAnuncio() {
-        RepositorioDeEstilos estilos = RepositorioDeEstilos.getInstance();
-        RepositorioDeInstrumentos instrumentos = RepositorioDeInstrumentos.getInstance();
-        return ok(criarAnuncio.render(estilos.findAll(), instrumentos.findAll()));
+        repositorioDeEstilos = RepositorioDeEstilos.getInstance();
+        repositorioDeInstrumentos = RepositorioDeInstrumentos.getInstance();
+
+        estiloList = repositorioDeEstilos.findAll();
+        instrumentoList = repositorioDeInstrumentos.findAll();
+
+        return ok(criarAnuncio.render(estiloList, instrumentoList));
     }
 
     @Transactional
     public static Result listaDeAnuncios() {
-        RepositorioDeAnuncios anuncios = RepositorioDeAnuncios.getInstance();
-        return ok(listaDeAnuncios.render(anuncios.findAll()));
+        repositorioDeAnuncios = RepositorioDeAnuncios.getInstance();
+        anuncioList = repositorioDeAnuncios.findAll();
+        Collections.sort(anuncioList);
+
+        return ok(listaDeAnuncios.render(anuncioList));
     }
 
-    private void addAnuncio(){
-
-    }
-
-}
-
-/**
-package controllers;
-
-        import java.util.List;
-
-        import models.Autor;
-        import models.Livro;
-        import models.repository.AutorRepository;
-        import models.repository.LivroRepository;
-        import play.data.Form;
-        import play.db.jpa.Transactional;
-        import play.mvc.Controller;
-        import play.mvc.Result;
-
-        import com.google.common.collect.Iterables;
-**/
-/**
- * Controlador Principal do Sistema
- */
-/**
-public class Application extends Controller {
-    static Form<Livro> bookForm = Form.form(Livro.class);
-    private static LivroRepository livroRepository = LivroRepository
-            .getInstance();
-    private static AutorRepository autorRepository = AutorRepository
-            .getInstance();
-    private static final int FIRST_PAGE = 1;
-
-    // Regex de um inteiro positivo
-    public static Result index() {
-        return redirect(routes.Application.books(FIRST_PAGE,
-                LivroRepository.DEFAULT_RESULTS));
-    }
-
-    // Notação transactional sempre que o método fizer transação com o Banco de
-    // Dados.
     @Transactional
-    public static Result books(int page, int pageSize) {
-        page = page >= FIRST_PAGE ? page : FIRST_PAGE;
-        pageSize = pageSize >= FIRST_PAGE ? pageSize
-                : LivroRepository.DEFAULT_RESULTS;
-        Long entityNumber = livroRepository.countAll();
-        // Se a página pedida for maior que o número de entidades
-        if (page > (entityNumber / pageSize)) {
-            // A última página
-            if (entityNumber != 0) {
-                page = (int) (Math.ceil(entityNumber
-                        / Float.parseFloat(String.valueOf(pageSize))));
-            } else {
-                page = FIRST_PAGE;
+    public static Result novoAnuncio() {
+        repositorioDeAnuncios = RepositorioDeAnuncios.getInstance();
+        Map<String, String> dados = Form.form().bindFromRequest().data();
+
+        String titulo = dados.get("titulo");
+        String descricao = dados.get("descricao");
+        String codigoDoAnuncio = dados.get("codigoDoAnuncio");
+        String email = dados.get("email");
+        String cidade = dados.get("cidade");
+        String bairro = dados.get("bairro");
+        String perfil = dados.get("perfilDoFacebook");
+        String opcaoDeBusca = dados.get("opcaoDeBusca");
+
+        //Multi selected Option about advertiser
+        List<Estilo> estilosQueNaoGosto = getDadosDeEstilos("estilosQueNaoGosto");
+        List<Estilo> estilosQueGosto = getDadosDeEstilos("estilosQueGosto");
+        List<Instrumento> instrumentoList = getDadosInstrumentosSelecionados();
+
+        try {
+
+            Logger.debug(Arrays.toString(estilosQueNaoGosto.toArray()));
+            Logger.debug(Arrays.toString(estilosQueGosto.toArray()));
+            Logger.debug(Arrays.toString(instrumentoList.toArray()));
+
+            Anuncio anuncio = new Anuncio(titulo, descricao, codigoDoAnuncio, cidade, bairro,
+                    email, perfil, opcaoDeBusca, instrumentoList,
+                    estilosQueGosto, estilosQueNaoGosto);
+            repositorioDeAnuncios.persist(anuncio);
+            repositorioDeAnuncios.flush();
+
+        } catch(Exception e) {
+            flash("erro",e.getMessage());
+            return redirect("publique");
+        }
+        anuncioList = repositorioDeAnuncios.getInstance().findAll();
+        return ok(listaDeAnuncios.render(anuncioList));
+    }
+
+    @Transactional
+    public static Result verAnuncio(Long id){
+
+        Anuncio anuncio = repositorioDeAnuncios.findByEntityId(id);
+
+        return ok(verAnuncio.render(anuncio));
+    }
+
+    @Transactional
+    public static Result removerAnuncio(Long id){
+        repositorioDeAnuncios.removeById(id);
+        repositorioDeAnuncios.flush();
+        anuncioList = repositorioDeAnuncios.getInstance().findAll();
+        return ok(listaDeAnuncios.render(anuncioList));
+    }
+    /**
+     @Transactional
+     public static Result pesquisaAnuncios(){
+
+     Form<Anuncio> anuncioForm =
+
+     List<Anuncio> anuncioList = repositorioDeAnuncios.findByAttributeName(item);
+
+     return redirect(routes.Application.listaDeAnuncios.render(anuncioList));
+     }
+     **/
+
+    @Transactional
+    private static List<Estilo> getDadosDeEstilos(String palavra) {
+        repositorioDeEstilos = RepositorioDeEstilos.getInstance();
+        Map<String, String[]> multipleData = request().body().asFormUrlEncoded();
+
+        List<Estilo> listaDeEstilos = new ArrayList<>();
+        String[] arrayDeEstilos = multipleData.get(palavra);
+
+        if(arrayDeEstilos != null) {
+            for(int i = 0; i < arrayDeEstilos.length; i++) {
+                long id = Long.parseLong(arrayDeEstilos[i]);
+                Estilo estilo = repositorioDeEstilos.findByEntityId(id);
+                if(!listaDeEstilos.contains(estilo)) {
+                    listaDeEstilos.add(estilo);
+                }
             }
         }
-        session("actualPage", String.valueOf(page));
-        return ok(views.html.index.render(
-                livroRepository.findAll(page, pageSize), bookForm));
+        return listaDeEstilos;
     }
 
-    // Notação transactional sempre que o método fizer transação com o Banco de
-    // Dados.
     @Transactional
-    public static Result newBook() {
-        // O formulário dos Livros Preenchidos
-        Form<Livro> filledForm = bookForm.bindFromRequest();
-        if (filledForm.hasErrors()) {
-            return badRequest(views.html.index.render(firstPage(), filledForm));
-        } else {
-            Livro livro = filledForm.get();
-            // Persiste o Livro criado
-            livroRepository.persist(livro);
-            // Espelha no Banco de Dados
-            livroRepository.flush();
-            return redirect(routes.Application.books(FIRST_PAGE,
-                    LivroRepository.DEFAULT_RESULTS));
+    private static List<Instrumento> getDadosInstrumentosSelecionados() {
+        repositorioDeInstrumentos = RepositorioDeInstrumentos.getInstance();
+        Map<String, String[]> multipleData = request().body().asFormUrlEncoded();
+
+        List<Instrumento> listaDeInstrumentos = new ArrayList<>();
+        String[] arrayformInstrumentos = multipleData.get("instrumentos");
+
+        if(arrayformInstrumentos != null) {
+            for(int i = 0; i < arrayformInstrumentos.length; i++) {
+                long id = Long.parseLong(arrayformInstrumentos[i]);
+                Instrumento instrumento = repositorioDeInstrumentos.findByEntityId(id);
+                if(!listaDeInstrumentos.contains(instrumento)) {
+                    listaDeInstrumentos.add(instrumento);
+                }
+            }
         }
+        return listaDeInstrumentos;
     }
-
-    @Transactional
-    public static Result addAutor(Long id, String nome) {
-        criaAutorDoLivro(id, nome);
-        return ok(views.html.index.render(firstPage(), bookForm));
-    }
-
-    private static void criaAutorDoLivro(Long id, String nome) {
-        Autor autor = autorRepository.findByName(nome);
-        // Procura um objeto da classe Livro com o {@code id}
-        Livro livroDaListagem = livroRepository.findByEntityId(id);
-        // Cria um novo Autor para um livro de {@code id}
-        if (autor == null) {
-            autor = new Autor();
-            autor.setNome(nome);
-            // Persiste o Novo Autor
-            autorRepository.persist(autor);
-        }
-        autor.getLivros().add(livroDaListagem);
-        livroDaListagem.getAutores().add(autor);
-        // Atualiza as informações do livro
-        livroRepository.merge(livroDaListagem);
-        // Espelha no Banco de Dados
-        livroRepository.flush();
-    }
-
-    // Notação transactional sempre que o método fizer transação com o Banco de
-    // Dados.
-    @Transactional
-    public static Result deleteBook(Long id) {
-        // Remove o Livro pelo Id
-        livroRepository.removeById(id);
-        // Espelha no banco de dados
-        livroRepository.flush();
-        return redirect(routes.Application.books(FIRST_PAGE,
-                LivroRepository.DEFAULT_RESULTS));
-    }
-
-    /**
-     * Retorna a primeira página do banco de dados
-     */
-/**
-    private static List<Livro> firstPage() {
-        return livroRepository.findAll(FIRST_PAGE,
-                LivroRepository.DEFAULT_RESULTS);
-    }
-
 }
-*/
