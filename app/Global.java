@@ -5,9 +5,9 @@ import java.util.List;
 import models.constant.TiposDeInstrumentos;
 import models.entity.Estilo;
 import models.entity.Instrumento;
+import models.repository.RepositorioDeEstilos;
 import models.repository.RepositorioDeInstrumentos;
 import models.constant.TiposDeEstilos;
-import models.repository.RepositorioDeEstilos;
 import play.Application;
 import play.GlobalSettings;
 import play.Logger;
@@ -24,23 +24,23 @@ public class Global extends GlobalSettings {
 	public void onStart(Application app) {
 		super.onStart(app);
 		Logger.info("Application has started");
-		
+
 		JPA.withTransaction(new play.libs.F.Callback0() {
 			@Override
 			public void invoke() throws Throwable {
 				try {
 					estilos = repositorioDeEstilos.findAll();
 					if(estilos.size() == 0) {
-						for(TiposDeEstilos style : TiposDeEstilos.values()) {
-							repositorioDeEstilos.persist(new Estilo(style.getDescricao()));
+						for(TiposDeEstilos estilo : TiposDeEstilos.values()) {
+							repositorioDeEstilos.persist(new Estilo(estilo.getDescricao()));
 						}
 						repositorioDeEstilos.flush();
 					}
-					
+
 					instrumentos = repositorioDeInstrumentos.findAll();
 					if(instrumentos.size() == 0) {
-						for(TiposDeInstrumentos instrument : TiposDeInstrumentos.values()) {
-							repositorioDeInstrumentos.persist(new Instrumento(instrument.getDescription()));
+						for(TiposDeInstrumentos instrumento : TiposDeInstrumentos.values()) {
+							repositorioDeInstrumentos.persist(new Instrumento(instrumento.getDescricao()));
 						}
 						repositorioDeInstrumentos.flush();
 					}
@@ -52,9 +52,9 @@ public class Global extends GlobalSettings {
 	}
 	
 	@Override
-	public void onStop(Application app) {	
+	public void onStop(Application app) {
 		super.onStop(app);
-		
+
 		JPA.withTransaction(new play.libs.F.Callback0() {
 			@Override
 			public void invoke() throws Throwable {
@@ -64,10 +64,10 @@ public class Global extends GlobalSettings {
 					for(Estilo estilo : estilos) {
 						repositorioDeEstilos.removeById(estilo.getId());
 					}
-					
+
 					instrumentos = repositorioDeInstrumentos.findAll();
-					for(Instrumento instrumento : instrumentos) {
-						repositorioDeInstrumentos.removeById(instrumento.getId());
+					for(Instrumento instrument : instrumentos) {
+						repositorioDeInstrumentos.removeById(instrument.getId());
 					}
 				} catch (Exception e) {
 					Logger.debug("Problem in finalizing: " + e.getMessage());
