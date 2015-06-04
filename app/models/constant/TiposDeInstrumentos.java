@@ -17,14 +17,14 @@ public enum TiposDeInstrumentos {
 	TRUMPET("Trompete"), TUBA("Tuba"), VIBRAPHONE("Vibrafone"), VIOLA("Viola"), VIOLIN("Violino"),
 	VOCAL("Vocal"), XYLOPHONE("Xilofone"), ZABUMBA("Zabumba");
 	
-	private String description;
+	private String descricao;
 	
-	private TiposDeInstrumentos(String description) {
-		this.description = description;
+	private TiposDeInstrumentos(String descricao) {
+		this.descricao = descricao;
 	}
 	
-	public String getDescription() {
-		return description;
+	public String getDescricao() {
+		return descricao;
 	}
 
 }
