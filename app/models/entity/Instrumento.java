@@ -5,39 +5,39 @@ import java.io.Serializable;
 import javax.persistence.*;
 
 
-@Entity(name = "instruments")
+@Entity(name = "instrumento")
 public class Instrumento implements Serializable {
-	
-	@Id
-	@GeneratedValue
-	private long id;
-	
-	@Column(name = "nome", nullable = false)
-	private String nome;
 
-	@Transient
-	private static final long serialVersionUID = 1L;
-	
-	public Instrumento() {
-	} 
+    @Id
+    @GeneratedValue
+    private long id;
 
-	public Instrumento(String nome) {
-		this.nome = nome;
-	}
+    @Column(name = "nomeDoInstrumento", nullable = false)
+    private String nomeDoInstrumento;
 
-	public long getId() {
-		return id;
-	}
+    @Transient
+    private static final long serialVersionUID = 1L;
 
-	public void setId(long id) {
-		this.id = id;
-	}
+    public Instrumento() {
+    }
 
-	public String getNome() {
-		return nome;
-	}
+    public Instrumento(String nome) {
+        this.nomeDoInstrumento = nome;
+    }
 
-	public void setNome(String nome) {
-		this.nome = nome;
-	}
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public String getNomeDoInstrumento() {
+        return nomeDoInstrumento;
+    }
+
+    public void setNomeDoInstrumento(String nome) {
+        this.nomeDoInstrumento = nome;
+    }
 }
