@@ -1,13 +1,12 @@
-
-
+import java.io.File;
+import java.io.FileReader;
 import java.util.List;
+import java.util.Scanner;
 
-import models.constant.TiposDeInstrumentos;
 import models.entity.Estilo;
 import models.entity.Instrumento;
 import models.repository.RepositorioDeEstilos;
 import models.repository.RepositorioDeInstrumentos;
-import models.constant.TiposDeEstilos;
 import play.Application;
 import play.GlobalSettings;
 import play.Logger;
@@ -26,27 +25,28 @@ public class Global extends GlobalSettings {
 		Logger.info("Application has started");
 
 		JPA.withTransaction(new play.libs.F.Callback0() {
+			@SuppressWarnings("resource")
 			@Override
 			public void invoke() throws Throwable {
-				try {
-					estilos = repositorioDeEstilos.findAll();
-					if(estilos.size() == 0) {
-						for(TiposDeEstilos estilo : TiposDeEstilos.values()) {
-							repositorioDeEstilos.persist(new Estilo(estilo.getDescricao()));
-						}
-						repositorioDeEstilos.flush();
-					}
-
-					instrumentos = repositorioDeInstrumentos.findAll();
-					if(instrumentos.size() == 0) {
-						for(TiposDeInstrumentos instrumento : TiposDeInstrumentos.values()) {
-							repositorioDeInstrumentos.persist(new Instrumento(instrumento.getDescricao()));
-						}
-						repositorioDeInstrumentos.flush();
-					}
-				} catch (Exception e) {
-					Logger.debug(e.getMessage());
+				Scanner in;
+				in = new Scanner(new FileReader(new File("app/TiposDeEstilos.dat").getCanonicalPath()));
+				while (in.hasNextLine()) {
+					String nomeEstilo = in.nextLine();
+					repositorioDeEstilos.persist(new Estilo(nomeEstilo));
 				}
+
+				repositorioDeEstilos.flush();
+
+				/*
+				 * Cadastrar instrumentos no Bando de Dados
+				 */
+				in = new Scanner(new FileReader(new File("app/TiposDeInstrumentos.dat").getCanonicalPath()));
+				while (in.hasNextLine()) {
+					String nomeInstrumentos = in.nextLine();
+					repositorioDeInstrumentos.persist(new Instrumento(nomeInstrumentos));
+				}
+
+				repositorioDeInstrumentos.flush();
 			}
 		});
 	}
@@ -54,25 +54,6 @@ public class Global extends GlobalSettings {
 	@Override
 	public void onStop(Application app) {
 		super.onStop(app);
-
-		JPA.withTransaction(new play.libs.F.Callback0() {
-			@Override
-			public void invoke() throws Throwable {
-				Logger.info("Application shutdown");
-				try {
-					estilos = repositorioDeEstilos.findAll();
-					for(Estilo estilo : estilos) {
-						repositorioDeEstilos.removeById(estilo.getId());
-					}
-
-					instrumentos = repositorioDeInstrumentos.findAll();
-					for(Instrumento instrument : instrumentos) {
-						repositorioDeInstrumentos.removeById(instrument.getId());
-					}
-				} catch (Exception e) {
-					Logger.debug("Problem in finalizing: " + e.getMessage());
-				}
-			}
-		});
+		Logger.debug("Application on stop");
 	}
 }
