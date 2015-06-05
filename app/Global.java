@@ -16,8 +16,9 @@ public class Global extends GlobalSettings {
 	
 	private List<Estilo> estilos;
 	private List<Instrumento> instrumentos;
-	private static RepositorioDeEstilos repositorioDeEstilos = RepositorioDeEstilos.getInstance();
-	private static RepositorioDeInstrumentos repositorioDeInstrumentos = RepositorioDeInstrumentos.getInstance();
+	private static RepositorioDeEstilos repositorioDeEstilos;
+	private static RepositorioDeInstrumentos repositorioDeInstrumentos;
+	private Scanner in;
 	
 	@Override
 	public void onStart(Application app) {
@@ -28,25 +29,23 @@ public class Global extends GlobalSettings {
 			@SuppressWarnings("resource")
 			@Override
 			public void invoke() throws Throwable {
-				Scanner in;
-				in = new Scanner(new FileReader(new File("app/TiposDeEstilos.dat").getCanonicalPath()));
+				repositorioDeEstilos = RepositorioDeEstilos.getInstance();
+				repositorioDeInstrumentos = RepositorioDeInstrumentos.getInstance();
+
+				in = new Scanner(new FileReader(new File("TiposDeEstilos.dat").getCanonicalPath()));
 				while (in.hasNextLine()) {
 					String nomeEstilo = in.nextLine();
 					repositorioDeEstilos.persist(new Estilo(nomeEstilo));
 				}
-
 				repositorioDeEstilos.flush();
 
-				/*
-				 * Cadastrar instrumentos no Bando de Dados
-				 */
-				in = new Scanner(new FileReader(new File("app/TiposDeInstrumentos.dat").getCanonicalPath()));
+				in = new Scanner(new FileReader(new File("TiposDeInstrumentos.dat").getCanonicalPath()));
 				while (in.hasNextLine()) {
 					String nomeInstrumentos = in.nextLine();
 					repositorioDeInstrumentos.persist(new Instrumento(nomeInstrumentos));
 				}
-
 				repositorioDeInstrumentos.flush();
+
 			}
 		});
 	}
