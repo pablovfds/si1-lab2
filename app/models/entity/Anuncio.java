@@ -3,7 +3,7 @@ package models.entity;
 import javax.persistence.*;
 import javax.validation.constraints.Min;
 import java.io.Serializable;
-import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -16,24 +16,24 @@ public class Anuncio implements Serializable, Comparable<Anuncio> {
 	private long id;
 
 	@Min(1)
-	@Column(name = "titulo", nullable = false)
+	@Column(name = "titulo", nullable = false, columnDefinition = "")
 	private String titulo;
 
 	@Min(10)
-	@Column(name = "descricao", nullable = false)
+	@Column(name = "descricao", nullable = false, columnDefinition = "")
 	private String descricao;
 
 	@Column(name = "dataDeCriacao")
 	@Temporal(value = TemporalType.DATE)
-	private Calendar dataDeCriacao;
+	private Date dataDeCriacao;
 
-	@Column(name = "buscaPor", nullable = false)
+	@Column(name = "buscaPor", nullable = false, columnDefinition = "")
 	private String buscaPor;
 
-	@Column(name = "email", nullable = false, unique = true)
+	@Column(name = "email", nullable = false, unique = true, columnDefinition = "")
 	private String email;
 
-	@Column(name = "perfilDoFacebook", unique = true)
+	@Column(name = "perfilDoFacebook", unique = true, columnDefinition = "")
 	private String perfilDoFacebook;
 
 	@Column(name = "cidade", nullable = false)
@@ -66,6 +66,7 @@ public class Anuncio implements Serializable, Comparable<Anuncio> {
 	public Anuncio(String titulo, String descricao, String codigoDoAnuncio, String cidade, String bairro,
 				   String email, String perfil_do_facebook, String buscaPor, List<Instrumento> instrumentoList,
 				   List<Estilo> estilosQueGosta, List<Estilo> estilosQueNaoGosta) throws Exception {
+
 		isValidTitle(titulo);
 		isValidDescription(descricao);
 		isValidCodigoDoAnuncio(codigoDoAnuncio);
@@ -77,7 +78,7 @@ public class Anuncio implements Serializable, Comparable<Anuncio> {
 		isValidListInstrument(instrumentoList);
 		this.estilosQueGosta = estilosQueGosta;
 		this.estilosQueNaoGosta = estilosQueNaoGosta;
-		this.dataDeCriacao = Calendar.getInstance();
+		this.dataDeCriacao = new Date();
 	}
 
 	public long getId() {
@@ -92,32 +93,32 @@ public class Anuncio implements Serializable, Comparable<Anuncio> {
 		return titulo;
 	}
 
-	public void setTitulo(String titulo) {
-		this.titulo = titulo;
+	public void setTitulo(String titulo) throws Exception {
+		isValidTitle(titulo);
 	}
 
 	public String getDescricao() {
 		return descricao;
 	}
 
-	public void setDescricao(String subject) {
-		this.descricao = subject;
+	public void setDescricao(String subject) throws Exception {
+		isValidDescription(subject);
 	}
 
-	public Calendar getDataDeCriacao() {
+	public Date getDataDeCriacao() {
 		return dataDeCriacao;
 	}
 
-	public void setDataDeCriacao(Calendar createdOn) {
-		this.dataDeCriacao = createdOn;
+	public void setDataDeCriacao(Date dataDeCriacao) {
+		this.dataDeCriacao = dataDeCriacao;
 	}
 
 	public String getBuscaPor() {
 		return buscaPor;
 	}
 
-	public void setBuscaPor(String searchFor) {
-		this.buscaPor = searchFor;
+	public void setBuscaPor(String searchFor) throws Exception {
+		isValidBySearch(searchFor);
 	}
 
 	public List<Estilo> getEstilosQueGosta() {
@@ -146,16 +147,16 @@ public class Anuncio implements Serializable, Comparable<Anuncio> {
 		return perfilDoFacebook;
 	}
 
-	public void setBairro(String bairro) {
-		this.bairro = bairro;
+	public void setBairro(String bairro) throws Exception {
+		isValidDistrict(bairro);
 	}
 
-	public void setCidade(String cidade) {
-		this.cidade = cidade;
+	public void setCidade(String cidade) throws Exception {
+		isValidCity(cidade);
 	}
 
-	public void setEmail(String email) {
-		this.email = email;
+	public void setEmail(String email) throws Exception {
+		isValidEmail(email);
 	}
 
 	public void setEstilosQueGosta(List<Estilo> estilosQueGosta) {
@@ -166,78 +167,85 @@ public class Anuncio implements Serializable, Comparable<Anuncio> {
 		this.estilosQueNaoGosta = estilosQueNaoGosta;
 	}
 
-	public void setInstrumentos(List<Instrumento> instrumentos) {
-		this.instrumentos = instrumentos;
+	public void setInstrumentos(List<Instrumento> instrumentos) throws Exception {
+		isValidListInstrument(instrumentos);
 	}
 
-	public void setPerfil_do_facebook(String perfilDoFacebook) {
-		this.perfilDoFacebook = perfilDoFacebook;
+	public void setPerfilDoFacebook(String perfilDoFacebook) throws Exception {
+		isValidProfile(perfilDoFacebook);
 	}
 
-	public String getCodigoDoAnuncio() { return codigoDoAnuncio; }
+	public String getCodigoDoAnuncio() { return this.codigoDoAnuncio; }
 
-	public void setCodigoDoAnuncio(String codigoDoAnuncio) { this.codigoDoAnuncio = codigoDoAnuncio; }
+	public void setCodigoDoAnuncio(String codigoDoAnuncio) throws Exception {
+		isValidCodigoDoAnuncio(codigoDoAnuncio);
+	}
 
 	private void isValidTitle(String titulo) throws Exception {
-		if (titulo.trim().isEmpty() || titulo == null){
-			throw new Exception("Preencha o campo: Título");
+		if (titulo == null || titulo.trim().isEmpty()){
+			throw new Exception("Preencha o campo: Titulo");
 		}
 		this.titulo = titulo.toUpperCase();
 	}
 
 	private void isValidDescription(String descricao) throws Exception {
-		if (descricao.trim().isEmpty() || descricao == null){
-			throw new Exception("Preencha o campo: Descrição");
+		if (descricao == null || descricao.trim().isEmpty()){
+			throw new Exception("Preencha o campo: Descricao");
 		}
 		this.descricao = descricao.toUpperCase();
 	}
 
 	private void isValidCodigoDoAnuncio(String codigoDoAnuncio) throws Exception {
-		if (codigoDoAnuncio.trim().isEmpty() || codigoDoAnuncio == null){
-			throw new Exception("Preencha o campo: Codigo do anúncio");
+		if (codigoDoAnuncio == null || codigoDoAnuncio.trim().isEmpty()){
+			throw new Exception("Preencha o campo: Codigo do anuncio");
 		}
-		this.codigoDoAnuncio = codigoDoAnuncio.toUpperCase();
+		else if (codigoDoAnuncio.length() > 5){
+			throw new Exception("Seu codigo do anuncio deve ter no maximo 5 caracteres.");
+		}
+		else {
+			this.codigoDoAnuncio = codigoDoAnuncio;
+		}
 	}
 
 	private void isValidCity(String cidade) throws Exception {
-		if (cidade.trim().isEmpty() || cidade == null){
+		if ( cidade == null || cidade.trim().isEmpty() ){
 			throw new Exception("Preencha o campo: Cidade");
 		}
 		this.cidade = cidade.toUpperCase();
 	}
 
 	private void isValidDistrict(String bairro) throws Exception {
-		if (bairro.trim().isEmpty() || bairro == null){
+		if (bairro == null || bairro.trim().isEmpty()){
 			throw new Exception("Preencha o campo: Bairro");
 		}
-		this.titulo = titulo.toUpperCase();
+		this.bairro = bairro.toUpperCase();
 	}
 
 	private void isValidEmail(String email) throws Exception {
-		Pattern p = Pattern.compile(".+@.+/.[a-z]+");
-
-		Matcher m = p.matcher(email);
-
-		boolean matchFound = m.matches();
-
-		if (matchFound || email.trim().isEmpty() || email == null){
+		if (email == null || email.trim().isEmpty()){
 			throw new Exception("Preencha o campo: E-mail");
 		}
-		this.email = email.toUpperCase();
+		Pattern p = Pattern.compile(".+@.+/.[a-z]+");
+		Matcher m = p.matcher(email);
+
+		if (m.matches()){
+			throw new Exception("Preencha o campo: E-mail");
+		}
+		this.email = email;
 	}
 
 	private void isValidProfile(String perfilDoFacebook) throws Exception {
-		if (perfilDoFacebook.trim().isEmpty() || perfilDoFacebook == null){
+		if (perfilDoFacebook == null || perfilDoFacebook.trim().isEmpty()){
 			throw new Exception("Preencha o campo: Perfil do Facebook");
 		}
-		this.titulo = titulo.toUpperCase();
+		this.perfilDoFacebook = perfilDoFacebook.toLowerCase();
 	}
 
-	private void isValidBySearch(String buscaPor) throws Exception {
-		if (buscaPor.trim().isEmpty() || buscaPor == null){
+	private void isValidBySearch(String searchFor) throws Exception {
+		if (searchFor == null || searchFor.trim().isEmpty()){
 			throw new Exception("Preencha o campo: Busca por");
 		}
-		this.buscaPor = buscaPor.toUpperCase();
+		this.buscaPor = searchFor.toUpperCase();
 	}
 
 	private void isValidListInstrument(List<Instrumento> instrumentoList) throws Exception {
@@ -248,6 +256,17 @@ public class Anuncio implements Serializable, Comparable<Anuncio> {
 	}
 
 	@Override
+	public boolean equals(Object obj) {
+
+		if (!(obj instanceof Anuncio)){
+			return false;
+		}
+
+		Anuncio obj1 = (Anuncio) obj;
+		return this.hashCode() == obj1.hashCode();
+	}
+
+	@Override
 	public int compareTo(Anuncio outroAnuncio) {
 		if (this.dataDeCriacao.before(outroAnuncio.getDataDeCriacao())){
 			return -1;
@@ -255,5 +274,10 @@ public class Anuncio implements Serializable, Comparable<Anuncio> {
 		else {
 			return 1;
 		}
+	}
+
+	@Override
+	public int hashCode() {
+		return titulo.hashCode() + codigoDoAnuncio.hashCode();
 	}
 }

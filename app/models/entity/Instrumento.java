@@ -21,8 +21,8 @@ public class Instrumento implements Serializable {
     public Instrumento() {
     }
 
-    public Instrumento(String nome) {
-        this.nomeDoInstrumento = nome;
+    public Instrumento(String nome) throws Exception {
+        isValidNameInstrument(nome);
     }
 
     public long getId() {
@@ -37,7 +37,20 @@ public class Instrumento implements Serializable {
         return nomeDoInstrumento;
     }
 
-    public void setNomeDoInstrumento(String nome) {
-        this.nomeDoInstrumento = nome;
+    public void setNomeDoInstrumento(String nome) throws Exception {
+        isValidNameInstrument(nome);
+    }
+
+    private void isValidNameInstrument(String nomeDoInstrumento) throws Exception {
+        if (nomeDoInstrumento == null || nomeDoInstrumento.trim().isEmpty()){
+            throw new Exception("Preencha o campo: Nome do instrumento");
+        }
+
+        this.nomeDoInstrumento = nomeDoInstrumento.toUpperCase();
+    }
+
+    @Override
+    public String toString() {
+        return nomeDoInstrumento;
     }
 }

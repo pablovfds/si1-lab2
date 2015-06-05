@@ -20,8 +20,8 @@ public class Estilo implements Serializable {
     public Estilo() {
     }
 
-    public Estilo(String nomeDoEstilo) {
-        this.nomeDoEstilo = nomeDoEstilo;
+    public Estilo(String nomeDoEstilo) throws Exception {
+        isValidNameStyle(nomeDoEstilo);
     }
 
     public long getId() {
@@ -36,7 +36,20 @@ public class Estilo implements Serializable {
         return nomeDoEstilo;
     }
 
-    public void setNomeDoEstilo(String nome) {
-        this.nomeDoEstilo = nome;
+    public void setNomeDoEstilo(String nome) throws Exception {
+        isValidNameStyle(nome);
+    }
+
+    private void isValidNameStyle(String nomeDoEstilo) throws Exception {
+        if (nomeDoEstilo == null || nomeDoEstilo.trim().isEmpty()){
+            throw new Exception ("Preencha o campo: Nome do estilo");
+        }
+
+        this.nomeDoEstilo = nomeDoEstilo.toUpperCase();
+    }
+
+    @Override
+    public String toString() {
+        return nomeDoEstilo;
     }
 }
