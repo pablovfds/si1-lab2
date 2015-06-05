@@ -1,4 +1,4 @@
-package modelsTest;
+package entityTest;
 
 import models.entity.Instrumento;
 import org.junit.Before;

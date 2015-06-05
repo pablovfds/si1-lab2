@@ -1,6 +1,5 @@
-package modelsTest;
+package entityTest;
 
-import junit.framework.Assert;
 import models.entity.Estilo;
 import org.junit.Before;
 import org.junit.Test;

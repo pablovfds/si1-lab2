@@ -1,4 +1,4 @@
-package modelsTest;
+package entityTest;
 
 import models.entity.Anuncio;
 import models.entity.Estilo;
