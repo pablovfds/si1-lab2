@@ -1,27 +1,24 @@
 package controllers;
 
 import models.entity.*;
-import models.repository.RepositorioDeAnuncios;
-import models.repository.RepositorioDeEstilos;
-import models.repository.RepositorioDeInstrumentos;
+import models.repository.*;
 import play.Logger;
 import play.data.Form;
 import play.db.jpa.Transactional;
 import play.mvc.Controller;
 import play.mvc.Result;
 import views.html.*;
-
 import java.util.*;
 
 public class Application extends Controller {
 
     static Form<Anuncio> anuncioForm = Form.form(Anuncio.class);
     private static List<Anuncio> anuncioList;
-    private static List<Instrumento> instrumentoList;
+    private static List<Instrumento> instrumentosList;
     private static List<Estilo> estiloList;
-    private static RepositorioDeAnuncios repositorioDeAnuncios;
-    private static RepositorioDeEstilos repositorioDeEstilos;
-    private static RepositorioDeInstrumentos repositorioDeInstrumentos;
+    private static RepositorioDeAnuncios repositorioDeAnuncios = RepositorioDeAnuncios.getInstance();
+    private static RepositorioDeEstilos repositorioDeEstilos = RepositorioDeEstilos.getInstance();
+    private static RepositorioDeInstrumentos repositorioDeInstrumentos = RepositorioDeInstrumentos.getInstance();
 
     @Transactional
     public static Result index() {
@@ -30,18 +27,14 @@ public class Application extends Controller {
 
     @Transactional
     public static Result criarAnuncio() {
-        repositorioDeEstilos = RepositorioDeEstilos.getInstance();
-        repositorioDeInstrumentos = RepositorioDeInstrumentos.getInstance();
-
         estiloList = repositorioDeEstilos.findAll();
-        instrumentoList = repositorioDeInstrumentos.findAll();
+        instrumentosList = repositorioDeInstrumentos.findAll();
 
-        return ok(criarAnuncio.render(estiloList, instrumentoList));
+        return ok(criarAnuncio.render(estiloList, instrumentosList));
     }
 
     @Transactional
     public static Result listaDeAnuncios() {
-        repositorioDeAnuncios = RepositorioDeAnuncios.getInstance();
         anuncioList = repositorioDeAnuncios.findAll();
         Collections.sort(anuncioList);
 
@@ -62,7 +55,6 @@ public class Application extends Controller {
         String perfil = dados.get("perfilDoFacebook");
         String opcaoDeBusca = dados.get("opcaoDeBusca");
 
-        //Multi selected Option about advertiser
         List<Estilo> estilosQueNaoGosto = getDadosDeEstilos("estilosQueNaoGosto");
         List<Estilo> estilosQueGosto = getDadosDeEstilos("estilosQueGosto");
         List<Instrumento> instrumentoList = getDadosInstrumentosSelecionados();
@@ -81,7 +73,7 @@ public class Application extends Controller {
 
         } catch(Exception e) {
             flash("erro",e.getMessage());
-            return redirect("publique");
+            return ok(criarAnuncio.render(estiloList, instrumentosList));
         }
         anuncioList = repositorioDeAnuncios.getInstance().findAll();
         return ok(listaDeAnuncios.render(anuncioList));
@@ -89,10 +81,7 @@ public class Application extends Controller {
 
     @Transactional
     public static Result verAnuncio(Long id){
-
-        Anuncio anuncio = repositorioDeAnuncios.findByEntityId(id);
-
-        return ok(verAnuncio.render(anuncio));
+        return ok(verAnuncio.render(repositorioDeAnuncios.findByEntityId(id)));
     }
 
     @Transactional
@@ -102,17 +91,72 @@ public class Application extends Controller {
         anuncioList = repositorioDeAnuncios.getInstance().findAll();
         return ok(listaDeAnuncios.render(anuncioList));
     }
-    /**
-     @Transactional
-     public static Result pesquisaAnuncios(){
 
-     Form<Anuncio> anuncioForm =
+    @Transactional
+    public static Result pesquisaAnuncios(){
+        List<Anuncio> list;
+        List<Anuncio> listResult = new ArrayList<>();
+        Map<String, String> dados = Form.form().bindFromRequest().data();
+        String dadosDaPesquisa = dados.get("textoDaPesquisa");
+        String pesquisaPorEstilo = dados.get("pesquisaPorEstilo");
+        String pesquisaPalavraChave = dados.get("pesquisaPalavraChave");
+        String pesquisaPorInstrumento = dados.get("pesquisaPorInstrumento");
+        String pesquisaTocarOcasionalmente = dados.get("pesquisaTocarOcasionalmente");
+        String pesquisaPorFormarBanda = dados.get("pesquisaPorFormarBanda");
 
-     List<Anuncio> anuncioList = repositorioDeAnuncios.findByAttributeName(item);
+        if (dadosDaPesquisa == null || dadosDaPesquisa.trim().isEmpty()){
+            flash("Pesquisa invalida");
+        }
 
-     return redirect(routes.Application.listaDeAnuncios.render(anuncioList));
-     }
-     **/
+        if (dadosDaPesquisa != null) {
+            if (!dadosDaPesquisa.trim().isEmpty()){
+                if (pesquisaPorEstilo != null && !pesquisaPorEstilo.trim().isEmpty()){
+                    list = RepositorioDeAnuncios.getInstance().findByAttributeName("estilosQueGosta", dadosDaPesquisa);
+                    filter(listResult, list);
+                    list = RepositorioDeAnuncios.getInstance().findByAttributeName("estilosQueNaoGosta", dadosDaPesquisa);
+                    filter(listResult, list);
+                }
+
+                if (pesquisaPalavraChave != null && !pesquisaPalavraChave.trim().isEmpty()){
+                    list = RepositorioDeAnuncios.getInstance().findByAttributeName("titulo", dadosDaPesquisa);
+                    filter(listResult, list);
+                    list = RepositorioDeAnuncios.getInstance().findByAttributeName("descricao", dadosDaPesquisa);
+                    filter(listResult, list);
+                }
+
+                if (pesquisaPorInstrumento != null && !pesquisaPorInstrumento.trim().isEmpty()){
+                    list = RepositorioDeAnuncios.getInstance().findByAttributeName("instrumentos", dadosDaPesquisa);
+                    filter(listResult, list);
+                }
+                if (pesquisaTocarOcasionalmente != null && !pesquisaTocarOcasionalmente.trim().isEmpty()){
+                    list = RepositorioDeAnuncios.getInstance().findByAttributeName("buscaPor", dadosDaPesquisa);
+                    filter(listResult, list);
+                }
+                if (pesquisaPorFormarBanda != null && !pesquisaPorFormarBanda.trim().isEmpty()){
+                    list = RepositorioDeAnuncios.getInstance().findByAttributeName("buscaPor", dadosDaPesquisa);
+                    filter(listResult, list);
+                }
+
+                if (listResult.isEmpty()){
+                    flash("Não foi encontrado nenhuma referência com os dados.");
+                }
+
+                Collections.sort(listResult);
+            }
+        }
+
+        return ok(listaDeAnuncios.render(listResult));
+    }
+
+    @Transactional
+    private static List<Anuncio> filter(List<Anuncio> anuncioList, List<Anuncio> anuncioList1){
+        for(Anuncio anuncio : anuncioList1){
+            if (!anuncioList.contains(anuncio)){
+                anuncioList.add(anuncio);
+            }
+        }
+        return anuncioList;
+    }
 
     @Transactional
     private static List<Estilo> getDadosDeEstilos(String palavra) {
@@ -123,10 +167,10 @@ public class Application extends Controller {
         String[] arrayDeEstilos = multipleData.get(palavra);
 
         if(arrayDeEstilos != null) {
-            for(int i = 0; i < arrayDeEstilos.length; i++) {
-                long id = Long.parseLong(arrayDeEstilos[i]);
+            for (String arrayDeEstilo : arrayDeEstilos) {
+                long id = Long.parseLong(arrayDeEstilo);
                 Estilo estilo = repositorioDeEstilos.findByEntityId(id);
-                if(!listaDeEstilos.contains(estilo)) {
+                if (!listaDeEstilos.contains(estilo)) {
                     listaDeEstilos.add(estilo);
                 }
             }
@@ -143,10 +187,10 @@ public class Application extends Controller {
         String[] arrayformInstrumentos = multipleData.get("instrumentos");
 
         if(arrayformInstrumentos != null) {
-            for(int i = 0; i < arrayformInstrumentos.length; i++) {
-                long id = Long.parseLong(arrayformInstrumentos[i]);
+            for (String arrayformInstrumento : arrayformInstrumentos) {
+                long id = Long.parseLong(arrayformInstrumento);
                 Instrumento instrumento = repositorioDeInstrumentos.findByEntityId(id);
-                if(!listaDeInstrumentos.contains(instrumento)) {
+                if (!listaDeInstrumentos.contains(instrumento)) {
                     listaDeInstrumentos.add(instrumento);
                 }
             }
