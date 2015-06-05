@@ -130,7 +130,7 @@
                                     <select class="form-control multiselect" name="instrumentosQueToco"
                                     multiple="multiple" disabled="disabled">
                                     @for(instrumento <- anuncio.getInstrumentos){
-                                        <option value=@instrumento.getId()>@instrumento.getNomeDoInstrumento()</option>}
+                                        <option value=@anuncio.getId>@instrumento.getNomeDoInstrumento()</option>}
                                     </select>
                                 </div>
                             </div>
@@ -145,7 +145,7 @@
                                     <select class="form-control multiselect" id="estilosQueGosto" name="instrumentosQueGosto"
                                     multiple="multiple" disabled="disabled">
                                             @for(estilo <- anuncio.getEstilosQueGosta){
-                                        <option value=@estilo.getId()>@estilo.getNomeDoEstilo()</option>}
+                                        <option value=@anuncio.getId()>@estilo.getNomeDoEstilo()</option>}
                                     </select>
                                 </div>
                             </div>
@@ -186,8 +186,8 @@
                                 </div>
                                 <br>
                                 <legend></legend>
-                                <form action="" method="post">
-                                    <input type="submit" class="btn btn-block btn-danger" value="Remover anúncio">
+                                <form action="@routes.Application.removerAnuncio(anuncio.getId)" method="post">
+                                    <input type="submit" class="btn btn-block btn-danger" value="Remover anúncio"><
                                 </form>
                             </div>
                         </form>
