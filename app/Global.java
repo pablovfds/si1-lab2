@@ -32,14 +32,14 @@ public class Global extends GlobalSettings {
 				repositorioDeEstilos = RepositorioDeEstilos.getInstance();
 				repositorioDeInstrumentos = RepositorioDeInstrumentos.getInstance();
 
-				in = new Scanner(new FileReader(new File("TiposDeEstilos.dat").getCanonicalPath()));
+				in = new Scanner(new FileReader(new File("app/TiposDeEstilos.dat").getCanonicalPath()));
 				while (in.hasNextLine()) {
 					String nomeEstilo = in.nextLine();
 					repositorioDeEstilos.persist(new Estilo(nomeEstilo));
 				}
 				repositorioDeEstilos.flush();
 
-				in = new Scanner(new FileReader(new File("TiposDeInstrumentos.dat").getCanonicalPath()));
+				in = new Scanner(new FileReader(new File("app/TiposDeInstrumentos.dat").getCanonicalPath()));
 				while (in.hasNextLine()) {
 					String nomeInstrumentos = in.nextLine();
 					repositorioDeInstrumentos.persist(new Instrumento(nomeInstrumentos));
