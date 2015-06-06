@@ -12,13 +12,13 @@ import java.util.*;
 
 public class Application extends Controller {
 
-    static Form<Anuncio> anuncioForm = Form.form(Anuncio.class);
     private static List<Anuncio> anuncioList;
     private static List<Instrumento> instrumentosList;
     private static List<Estilo> estiloList;
     private static RepositorioDeAnuncios repositorioDeAnuncios = RepositorioDeAnuncios.getInstance();
     private static RepositorioDeEstilos repositorioDeEstilos = RepositorioDeEstilos.getInstance();
     private static RepositorioDeInstrumentos repositorioDeInstrumentos = RepositorioDeInstrumentos.getInstance();
+    private static int CONTADOR_DE_AJUDA = 0;
 
     @Transactional
     public static Result index() {
@@ -38,7 +38,7 @@ public class Application extends Controller {
         anuncioList = repositorioDeAnuncios.findAll();
         Collections.sort(anuncioList);
 
-        return ok(listaDeAnuncios.render(anuncioList));
+        return ok(listaDeAnuncios.render(anuncioList, CONTADOR_DE_AJUDA));
     }
 
     @Transactional
@@ -76,7 +76,7 @@ public class Application extends Controller {
             return ok(criarAnuncio.render(estiloList, instrumentosList));
         }
         anuncioList = repositorioDeAnuncios.getInstance().findAll();
-        return ok(listaDeAnuncios.render(anuncioList));
+        return ok(listaDeAnuncios.render(anuncioList, CONTADOR_DE_AJUDA));
     }
 
     @Transactional
@@ -86,10 +86,17 @@ public class Application extends Controller {
 
     @Transactional
     public static Result removerAnuncio(Long id){
+        Map<String, String> dados = Form.form().bindFromRequest().data();
+        String opcao = dados.get("opcaoEncontroRemover");
+
+        if (opcao.equals("sim")){
+            CONTADOR_DE_AJUDA += 1;
+        }
+
         repositorioDeAnuncios.removeById(id);
         repositorioDeAnuncios.flush();
         anuncioList = repositorioDeAnuncios.getInstance().findAll();
-        return ok(listaDeAnuncios.render(anuncioList));
+        return ok(listaDeAnuncios.render(anuncioList, CONTADOR_DE_AJUDA));
     }
 
     @Transactional
@@ -138,14 +145,14 @@ public class Application extends Controller {
                 }
 
                 if (listResult.isEmpty()){
-                    flash("Não foi encontrado nenhuma referência com os dados.");
+                    flash("Nao foi encontrado nenhuma referencia com os dados.");
                 }
 
                 Collections.sort(listResult);
             }
         }
 
-        return ok(listaDeAnuncios.render(listResult));
+        return ok(listaDeAnuncios.render(listResult, CONTADOR_DE_AJUDA));
     }
 
     @Transactional
