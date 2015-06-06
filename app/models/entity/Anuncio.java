@@ -1,6 +1,7 @@
 package models.entity;
 
 import javax.persistence.*;
+import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import java.io.Serializable;
 import java.util.Date;
@@ -14,11 +15,12 @@ public class Anuncio implements Serializable, Comparable<Anuncio> {
 	@Id
 	@GeneratedValue
 	private long id;
-
+	@Max(100)
 	@Min(1)
 	@Column(name = "titulo", nullable = false, columnDefinition = "")
 	private String titulo;
 
+	@Max(200)
 	@Min(10)
 	@Column(name = "descricao", nullable = false, columnDefinition = "")
 	private String descricao;
@@ -30,15 +32,21 @@ public class Anuncio implements Serializable, Comparable<Anuncio> {
 	@Column(name = "buscaPor", nullable = false, columnDefinition = "")
 	private String buscaPor;
 
-	@Column(name = "email", nullable = false, unique = true, columnDefinition = "")
+	@Max(100)
+	@Column(name = "email", unique = true, columnDefinition = "")
 	private String email;
 
+	@Max(100)
 	@Column(name = "perfilDoFacebook", unique = true, columnDefinition = "")
 	private String perfilDoFacebook;
 
+	@Min(2)
+	@Max(50)
 	@Column(name = "cidade", nullable = false)
 	private String cidade;
 
+	@Min(2)
+	@Max(100)
 	@Column(name = "bairro", nullable = false)
 	private String bairro;
 
@@ -54,6 +62,7 @@ public class Anuncio implements Serializable, Comparable<Anuncio> {
 	@Column(name = "estilosQueNaoGosta")
 	private List<Estilo> estilosQueNaoGosta;
 
+	@Max(5)
 	@Column(name = "codigoDoAnuncio", nullable = false)
 	private String codigoDoAnuncio;
 
@@ -185,6 +194,11 @@ public class Anuncio implements Serializable, Comparable<Anuncio> {
 		if (titulo == null || titulo.trim().isEmpty()){
 			throw new Exception("Preencha o campo: Titulo");
 		}
+
+		if (titulo.length() > 0 && titulo.length() < 100){
+			throw new Exception("Preencha o campo: 'Titulo' com no máximo 100 caracteres.");
+		}
+
 		this.titulo = titulo.toUpperCase();
 	}
 
@@ -192,6 +206,11 @@ public class Anuncio implements Serializable, Comparable<Anuncio> {
 		if (descricao == null || descricao.trim().isEmpty()){
 			throw new Exception("Preencha o campo: Descricao");
 		}
+
+		if (descricao.length() >= 10 && descricao.length() < 200){
+			throw new Exception("Preencha o campo: 'Descricao' com no máximo 200 caracteres.");
+		}
+
 		this.descricao = descricao.toUpperCase();
 	}
 
@@ -211,6 +230,10 @@ public class Anuncio implements Serializable, Comparable<Anuncio> {
 		if ( cidade == null || cidade.trim().isEmpty() ){
 			throw new Exception("Preencha o campo: Cidade");
 		}
+		if (cidade.length() > 2 && cidade.length() < 50){
+			throw new Exception("Preencha o campo: 'Cidade' com no máximo 50 caracteres.");
+		}
+
 		this.cidade = cidade.toUpperCase();
 	}
 
@@ -218,6 +241,10 @@ public class Anuncio implements Serializable, Comparable<Anuncio> {
 		if (bairro == null || bairro.trim().isEmpty()){
 			throw new Exception("Preencha o campo: Bairro");
 		}
+		if (bairro.length() > 2 && bairro.length() < 100){
+			throw new Exception("Preencha o campo: 'Bairro' com no máximo 100 caracteres.");
+		}
+
 		this.bairro = bairro.toUpperCase();
 	}
 
@@ -278,6 +305,6 @@ public class Anuncio implements Serializable, Comparable<Anuncio> {
 
 	@Override
 	public int hashCode() {
-		return titulo.hashCode() + codigoDoAnuncio.hashCode();
+		return getTitulo().hashCode() + getCodigoDoAnuncio().hashCode() + getDataDeCriacao().hashCode();
 	}
 }
