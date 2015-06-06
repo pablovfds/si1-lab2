@@ -9,6 +9,13 @@
         <link rel="stylesheet" type="text/css" href=@routes.Assets.at("stylesheets/bootstrap.min.css")>
         <script src=@routes.Assets.at("javascripts/jquery.js")></script>
         <link rel="shortcut icon" href=@routes.Assets.at("images/imagem1.jpg") type="image/jpg">
+        <!-- Script to Activate the Carousel -->
+		<script type="text/javascript">
+    		$('.carousel').carousel({
+        		interval: 5000 //changes the speed
+    		})
+    	</script>
+
     </head>
 
     <body>
@@ -25,17 +32,17 @@
                                         <span class="icon-bar"></span>
                                         <span class="icon-bar"></span>
                                     </button>
-                                    <a class="navbar-brand" href="index.escala.html">Música Boa</a>
+                                    <a style="font-size: x-large" class="navbar-brand" href=@routes.Application.index()>Música Boa</a>
                                 </div>
                                 <div class="collapse navbar-collapse" id="navbar-ex-collapse">
-                                    <ul class="nav navbar-nav navbar-right">
-                                        <li class="active" id="home">
+                                    <ul class="nav navbar-nav navbar-right" style="font-size: large">
+                                        <li>
                                             <a href=@routes.Application.index()>Página Inicial</a>
                                         </li>
-                                        <li id="buttonCriarAnuncio">
+                                        <li>
                                             <a href=@routes.Application.criarAnuncio()>Criar Anúncio<br></a>
                                         </li>
-                                        <li id="buttonListaAnuncio">
+                                        <li>
                                             <a href=@routes.Application.listaDeAnuncios()>Lista de Anúncios<br></a>
                                         </li>
                                     </ul>
@@ -48,49 +55,58 @@
                 <br>
             </div>
         </div>
-        <div id="slides" class="carousel slide" data-ride="carousel">
-                <!-- Indicators -->
-            <ol class="carousel-indicators">
-                <li data-target="slides" data-slide-to="0" class="active"></li>
-                <li data-target="slides" data-slide-to="1"></li>
-            </ol>
 
-                <!-- Wrapper for slides -->
-            <div class="carousel-inner" role="listbox">
-                <div class="item active">
-                    <img src=@routes.Assets.at("images/imagem5.jpg")>
-                    <div class="carousel-caption">
+        <div class="col-lg-15 text-center">
+            <div id="carousel-example-generic" class="carousel slide">
+                    <!-- Indicators -->
+                <ol class="carousel-indicators hidden-xs">
+                    <li data-target="#carousel-example-generic" data-slide-to="0" class="active"></li>
+                    <li data-target="#carousel-example-generic" data-slide-to="1"></li>
+                </ol>
 
+                    <!-- Wrapper for slides -->
+                <div class="carousel-inner">
+                    <div class="item active">
+                        <h3 class="brand-before">
+                            <big>Bem vindo ao Música Boa</big>
+                        </h3>
+                        <img src=@routes.Assets.at("images/imagem5.jpg") alt="">
                         <div class="carousel-caption">
-                            <h1 class="text-center text-inverse">Crie seu anúncio</h1>
-                            <h3 class="text-primary well well-small">Crie seu anúncio e tente encrontrar uma banda para tocar.</h3>
+                            <div class="carousel-caption">
+                                <h1 class="text-center text-inverse">Crie seu anúncio</h1>
+                                <h3 class="text-primary well well-small">Crie seu anúncio e tente encrontrar uma banda para tocar.</h3>
+                            </div>
                         </div>
                     </div>
-                </div>
-
-                <div class="item">
-                    <img src=@routes.Assets.at("images/imagem4.JPG")>
-                    <div class="carousel-caption">
-
+                    <div class="item">
+                        <img src=@routes.Assets.at("images/imagem4.JPG") alt="">
                         <div class="carousel-caption">
-                            <h1 class="text-inverse">Busca por parceiros músicais</h1>
-                            <h3 class="text-primary well well-small">Na lista de anúncios você poderá buscar por parceiros músicais para formar
-                                sua banda.</h3>
+                            <div class="carousel-caption">
+                                <h1 class="text-inverse">Busca por parceiros músicais</h1>
+                                <h3 class="text-primary well well-small">Na lista de anúncios você poderá buscar por parceiros músicais para formar
+                                    sua banda.</h3>
+                            </div>
                         </div>
                     </div>
+
                 </div>
+
+                    <!-- Controls -->
+                <a class="left carousel-control" href="#carousel-example-generic" data-slide="prev">
+                    <span class="icon-prev"></span>
+                </a>
+                <a class="right carousel-control" href="#carousel-example-generic" data-slide="next">
+                    <span class="icon-next"></span>
+                </a>
             </div>
-
-                <!-- Left and right controls -->
-            <a class="left carousel-control" href="#slides" role="button" data-slide="prev">
-                <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
-                <span class="sr-only">Previous</span>
-            </a>
-            <a class="right carousel-control" href="#slides" role="button" data-slide="next">
-                <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
-                <span class="sr-only">Next</span>
-            </a>
+            <h5>
+                <small>By
+                    <strong>Páblo Victor</strong>
+                </small>
+            </h5>
         </div>
+
+
     </body>
 
 </html>
