@@ -4,7 +4,6 @@
 
 # Home page
 GET     /                           controllers.Application.index()
-GET 	/sobre						controllers.Application.sobre()
 GET  	/publique					controllers.Application.publique()
 GET	    /anuncios					controllers.Application.anuncios(page: Integer ?=1, pagaSize: Integer ?=15, check: Boolean ?= true)
 GET		/anuncio/:id				controllers.Application.anuncio(id: Long)
