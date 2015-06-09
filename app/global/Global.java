@@ -107,8 +107,8 @@ public class Global extends GlobalSettings {
 		String title = "";
 		String description = "Teste básico para um POST de um anúncio!";
 		String email = "";
-		String city = "Campina Grande";
-		String neighborhood = "José Pinheiro";
+		String city = "Cidade Test";
+		String neighborhood = "Bairro Teste";
 		String profile = "";
 		String interest = "";
 		
@@ -123,12 +123,12 @@ public class Global extends GlobalSettings {
 			title = "Anúncio Teste " + String.valueOf(i);
 			
 			if(release < 0.35) {
-				email = "diegoado@gmail.com";
+				email = "emailTest@gmail.com";
 			} else if(release > 0.35 &&  release < 0.65) {
-				email = "diegoado@gmail.com";
-				profile = "https://www.facebook.com/diego.adolfo.332";
+				email = "emailTest123@gmail.com";
+				profile = "https://www.facebook.com/link.test123";
 			} else {
-				profile = "https://www.facebook.com/diego.adolfo.332";
+				profile = "https://www.facebook.com/link.test";
 			}
 			
 			if(release <= 0.5) {

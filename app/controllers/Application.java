@@ -28,9 +28,9 @@ public class Application extends Controller {
 	private static final int FIRST_PAGE = 1;
 	private static List<Poster> adverts;
 	
-	private static StyleRepository styles;
+	private static StyleRepository styleRepository;
 	private static PosterRepository postRepository;
-	private static InstrumentRepository instruments;
+	private static InstrumentRepository instrumentRepository;
 	
 	@Transactional
     public static Result index() {
@@ -39,13 +39,13 @@ public class Application extends Controller {
 	
 	@Transactional
 	public static Result publique() {
-		styles = StyleRepository.getInstance();
-		instruments = InstrumentRepository.getInstance();
-		return ok(publique.render(styles.findAll(), instruments.findAll()));
+		instrumentRepository = InstrumentRepository.getInstance();
+		styleRepository = StyleRepository.getInstance();
+		return ok(publique.render(styleRepository.findAll(), instrumentRepository.findAll()));
 	}
 			
 	@Transactional
-	public static Result createAd() {
+	public static Result criarAnuncio() {
 		postRepository = PosterRepository.getInstance();
 		Map<String, String> data = Form.form().bindFromRequest().data();
 		
@@ -78,7 +78,7 @@ public class Application extends Controller {
 			
 	@Transactional
 	private static List<Style> getStyleSelectedData(String key) {
-		styles = StyleRepository.getInstance();
+		styleRepository = StyleRepository.getInstance();
 		Map<String, String[]> multipleData = request().body().asFormUrlEncoded();
 		
 		List<Style> styleList = new ArrayList<Style>();
@@ -87,7 +87,7 @@ public class Application extends Controller {
 		if(requestStyleArray != null) {
 			for(int i = 0; i < requestStyleArray.length; i++) {
 				long id = Long.parseLong(requestStyleArray[i]);
-				Style style = styles.findByEntityId(id);
+				Style style = styleRepository.findByEntityId(id);
 				if(!styleList.contains(style)) {
 					styleList.add(style);
 				}
@@ -98,7 +98,7 @@ public class Application extends Controller {
 	
 	@Transactional
 	private static List<Instrument> getInstrumentSelectedData() {
-		instruments = InstrumentRepository.getInstance();
+		instrumentRepository = InstrumentRepository.getInstance();
 		Map<String, String[]> multipleData = request().body().asFormUrlEncoded();
 		
 		List<Instrument> instrumentList = new ArrayList<>();
@@ -107,7 +107,7 @@ public class Application extends Controller {
 		if(requestInstrumentArray != null) {
 			for(int i = 0; i < requestInstrumentArray.length; i++) {
 				long id = Long.parseLong(requestInstrumentArray[i]);
-				Instrument instrument = instruments.findByEntityId(id);
+				Instrument instrument = instrumentRepository.findByEntityId(id);
 				if(!instrumentList.contains(instrument)) {
 					instrumentList.add(instrument);
 				}
@@ -148,7 +148,7 @@ public class Application extends Controller {
 	}
 	
 	@Transactional
-	public static Result searchAd() {
+	public static Result buscarAnuncio() {
 		postRepository = PosterRepository.getInstance();
 		Map<String, String> data = Form.form().bindFromRequest().data();
 		

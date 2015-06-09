@@ -18,8 +18,5 @@ public class PosterRepository extends GenericRepository<Poster> {
 		}
 		return instance;
 	}
-	
-	public List<Poster> findByTitle(String title) {
-		return null;
-	}
+
 }

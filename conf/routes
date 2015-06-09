@@ -4,12 +4,12 @@
 
 # Home page
 GET     /                           controllers.Application.index()
-GET  	/publique					controllers.Application.publique()
-GET	    /anuncios					controllers.Application.anuncios(page: Integer ?=1, pagaSize: Integer ?=15, check: Boolean ?= true)
+GET  	/criaranuncio				controllers.Application.publique()
+GET	    /listadeanuncios			controllers.Application.anuncios(page: Integer ?=1, pagaSize: Integer ?=15, check: Boolean ?= true)
 GET		/anuncio/:id				controllers.Application.anuncio(id: Long)
 
-POST    /publique					controllers.Application.createAd()
-POST	/anuncios					controllers.Application.searchAd()
+POST    /criaranuncio				controllers.Application.criarAnuncio()
+POST	/listadeanuncios			controllers.Application.buscarAnuncio()
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)
