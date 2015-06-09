@@ -1,207 +1,239 @@
 package controllers;
 
-import models.entity.*;
-import models.repository.*;
-import play.Logger;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 import play.data.Form;
 import play.db.jpa.Transactional;
 import play.mvc.Controller;
 import play.mvc.Result;
 import views.html.*;
-import java.util.*;
+import models.entity.*;
+import models.exception.*;
+import models.repository.*;
+
 
 public class Application extends Controller {
-
-    private static List<Anuncio> anuncioList;
-    private static List<Instrumento> instrumentosList;
-    private static List<Estilo> estiloList;
-    private static RepositorioDeAnuncios repositorioDeAnuncios = RepositorioDeAnuncios.getInstance();
-    private static RepositorioDeEstilos repositorioDeEstilos = RepositorioDeEstilos.getInstance();
-    private static RepositorioDeInstrumentos repositorioDeInstrumentos = RepositorioDeInstrumentos.getInstance();
-    private static int CONTADOR_DE_AJUDA = 0;
-
-    @Transactional
+	
+	private static final int FIRST_PAGE = 1;
+	private static List<Poster> adverts;
+	
+	private static StyleRepository styles;
+	private static PosterRepository postRepository;
+	private static InstrumentRepository instruments;
+	
+	@Transactional
     public static Result index() {
         return ok(index.render());
     }
-
-    @Transactional
-    public static Result criarAnuncio() {
-        estiloList = repositorioDeEstilos.findAll();
-        instrumentosList = repositorioDeInstrumentos.findAll();
-
-        return ok(criarAnuncio.render(estiloList, instrumentosList));
+	
+	@Transactional
+	public static Result publique() {
+		styles = StyleRepository.getInstance();
+		instruments = InstrumentRepository.getInstance();
+		return ok(publique.render(styles.findAll(), instruments.findAll()));
+	}
+			
+	@Transactional
+	public static Result createAd() {
+		postRepository = PosterRepository.getInstance();
+		Map<String, String> data = Form.form().bindFromRequest().data();
+		
+		// Informações do Anúncio
+		String titulo = data.get("titulo");
+		String descrição = data.get("descricao");
+		
+		//Informamões do Anunciante
+		String email = data.get("email");
+		String cidade = data.get("city");
+		String bairro = data.get("bairro");
+		String perfil = data.get("perfil");
+		String interesse = data.get("interesse");
+		
+		//Multi selected Option about advertiser
+		List<Style> badStyles = getStyleSelectedData("badSty[]");
+		List<Style> goodStyles = getStyleSelectedData("goodSty[]");
+		List<Instrument> myInstruments = getInstrumentSelectedData(); 
+		
+		try {			
+			User user = new User(email, perfil, cidade, bairro, myInstruments, badStyles, goodStyles);
+			Poster poster = new Poster(titulo, descrição, interesse, user);
+			postRepository.persist(poster);
+			postRepository.flush();
+			
+			flash("success", String.valueOf(poster.getCode()));
+		} catch(NewAdException e) {
+			flash("erro", "Anúncio não publicado, pois: " + e.getMessage());
+			return redirect("publique");
+		} 
+		
+		return redirect("anuncios");
+	}
+			
+	@Transactional
+	private static List<Style> getStyleSelectedData(String key) {
+		styles = StyleRepository.getInstance();
+		Map<String, String[]> multipleData = request().body().asFormUrlEncoded();
+		
+		List<Style> styleList = new ArrayList<Style>();
+		String[] requestStyleArray = multipleData.get(key);
+		
+		if(requestStyleArray != null) {
+			for(int i = 0; i < requestStyleArray.length; i++) {
+				long id = Long.parseLong(requestStyleArray[i]);
+				Style style = styles.findByEntityId(id);
+				if(!styleList.contains(style)) {
+					styleList.add(style);
+				}
+			}
+		}
+		return styleList;
+	}
+	
+	@Transactional
+	private static List<Instrument> getInstrumentSelectedData() {
+		instruments = InstrumentRepository.getInstance();
+		Map<String, String[]> multipleData = request().body().asFormUrlEncoded();
+		
+		List<Instrument> instrumentList = new ArrayList<>();
+		String[] requestInstrumentArray = multipleData.get("myInst[]");
+		
+		if(requestInstrumentArray != null) {
+			for(int i = 0; i < requestInstrumentArray.length; i++) {
+				long id = Long.parseLong(requestInstrumentArray[i]);
+				Instrument instrument = instruments.findByEntityId(id);
+				if(!instrumentList.contains(instrument)) {
+					instrumentList.add(instrument);
+				}
+			}
+		}
+		return instrumentList;
+	}
+	
+	@Transactional
+    public static Result anuncio(Long id) {
+        return ok(index.render());
     }
-
-    @Transactional
-    public static Result listaDeAnuncios() {
-        anuncioList = repositorioDeAnuncios.findAll();
-        Collections.sort(anuncioList);
-
-        return ok(listaDeAnuncios.render(anuncioList, CONTADOR_DE_AJUDA));
-    }
-
-    @Transactional
-    public static Result novoAnuncio() {
-        repositorioDeAnuncios = RepositorioDeAnuncios.getInstance();
-        Map<String, String> dados = Form.form().bindFromRequest().data();
-
-        String titulo = dados.get("titulo");
-        String descricao = dados.get("descricao");
-        String codigoDoAnuncio = dados.get("codigoDoAnuncio");
-        String email = dados.get("email");
-        String cidade = dados.get("cidade");
-        String bairro = dados.get("bairro");
-        String perfil = dados.get("perfilDoFacebook");
-        String opcaoDeBusca = dados.get("opcaoDeBusca");
-
-        List<Estilo> estilosQueNaoGosto = getDadosDeEstilos("estilosQueNaoGosto");
-        List<Estilo> estilosQueGosto = getDadosDeEstilos("estilosQueGosto");
-        List<Instrumento> instrumentoList = getDadosInstrumentosSelecionados();
-
-        try {
-
-            Logger.debug(Arrays.toString(estilosQueNaoGosto.toArray()));
-            Logger.debug(Arrays.toString(estilosQueGosto.toArray()));
-            Logger.debug(Arrays.toString(instrumentoList.toArray()));
-
-            Anuncio anuncio = new Anuncio(titulo, descricao, codigoDoAnuncio, cidade, bairro,
-                    email, perfil, opcaoDeBusca, instrumentoList,
-                    estilosQueGosto, estilosQueNaoGosto);
-            repositorioDeAnuncios.persist(anuncio);
-            repositorioDeAnuncios.flush();
-
-        } catch(Exception e) {
-            flash("erro",e.getMessage());
-            return ok(criarAnuncio.render(estiloList, instrumentosList));
-        }
-        anuncioList = repositorioDeAnuncios.getInstance().findAll();
-        return ok(listaDeAnuncios.render(anuncioList, CONTADOR_DE_AJUDA));
-    }
-
-    @Transactional
-    public static Result verAnuncio(Long id){
-        return ok(verAnuncio.render(repositorioDeAnuncios.findByEntityId(id)));
-    }
-
-    @Transactional
-    public static Result removerAnuncio(Long id){
-        Map<String, String> dados = Form.form().bindFromRequest().data();
-        String opcao = dados.get("opcaoEncontroRemover");
-
-        if (opcao.equals("sim")){
-            CONTADOR_DE_AJUDA += 1;
-        }
-
-        repositorioDeAnuncios.removeById(id);
-        repositorioDeAnuncios.flush();
-        anuncioList = repositorioDeAnuncios.getInstance().findAll();
-        return ok(listaDeAnuncios.render(anuncioList, CONTADOR_DE_AJUDA));
-    }
-
-    @Transactional
-    public static Result pesquisaAnuncios(){
-        List<Anuncio> list;
-        List<Anuncio> listResult = new ArrayList<>();
-        Map<String, String> dados = Form.form().bindFromRequest().data();
-        String dadosDaPesquisa = dados.get("textoDaPesquisa");
-        String pesquisaPorEstilo = dados.get("pesquisaPorEstilo");
-        String pesquisaPalavraChave = dados.get("pesquisaPalavraChave");
-        String pesquisaPorInstrumento = dados.get("pesquisaPorInstrumento");
-        String pesquisaTocarOcasionalmente = dados.get("pesquisaTocarOcasionalmente");
-        String pesquisaPorFormarBanda = dados.get("pesquisaPorFormarBanda");
-
-        if (dadosDaPesquisa == null || dadosDaPesquisa.trim().isEmpty()){
-            flash("Pesquisa invalida");
-        }
-
-        if (dadosDaPesquisa != null) {
-            if (!dadosDaPesquisa.trim().isEmpty()){
-                if (pesquisaPorEstilo != null && !pesquisaPorEstilo.trim().isEmpty()){
-                    list = RepositorioDeAnuncios.getInstance().findByAttributeName("estilosQueGosta", dadosDaPesquisa);
-                    filter(listResult, list);
-                    list = RepositorioDeAnuncios.getInstance().findByAttributeName("estilosQueNaoGosta", dadosDaPesquisa);
-                    filter(listResult, list);
-                }
-
-                if (pesquisaPalavraChave != null && !pesquisaPalavraChave.trim().isEmpty()){
-                    list = RepositorioDeAnuncios.getInstance().findByAttributeName("titulo", dadosDaPesquisa);
-                    filter(listResult, list);
-                    list = RepositorioDeAnuncios.getInstance().findByAttributeName("descricao", dadosDaPesquisa);
-                    filter(listResult, list);
-                }
-
-                if (pesquisaPorInstrumento != null && !pesquisaPorInstrumento.trim().isEmpty()){
-                    list = RepositorioDeAnuncios.getInstance().findByAttributeName("instrumentos", dadosDaPesquisa);
-                    filter(listResult, list);
-                }
-                if (pesquisaTocarOcasionalmente != null && !pesquisaTocarOcasionalmente.trim().isEmpty()){
-                    list = RepositorioDeAnuncios.getInstance().findByAttributeName("buscaPor", dadosDaPesquisa);
-                    filter(listResult, list);
-                }
-                if (pesquisaPorFormarBanda != null && !pesquisaPorFormarBanda.trim().isEmpty()){
-                    list = RepositorioDeAnuncios.getInstance().findByAttributeName("buscaPor", dadosDaPesquisa);
-                    filter(listResult, list);
-                }
-
-                if (listResult.isEmpty()){
-                    flash("Nao foi encontrado nenhuma referencia com os dados.");
-                }
-
-                Collections.sort(listResult);
-            }
-        }
-
-        return ok(listaDeAnuncios.render(listResult, CONTADOR_DE_AJUDA));
-    }
-
-    @Transactional
-    private static List<Anuncio> filter(List<Anuncio> anuncioList, List<Anuncio> anuncioList1){
-        for(Anuncio anuncio : anuncioList1){
-            if (!anuncioList.contains(anuncio)){
-                anuncioList.add(anuncio);
-            }
-        }
-        return anuncioList;
-    }
-
-    @Transactional
-    private static List<Estilo> getDadosDeEstilos(String palavra) {
-        repositorioDeEstilos = RepositorioDeEstilos.getInstance();
-        Map<String, String[]> multipleData = request().body().asFormUrlEncoded();
-
-        List<Estilo> listaDeEstilos = new ArrayList<>();
-        String[] arrayDeEstilos = multipleData.get(palavra);
-
-        if(arrayDeEstilos != null) {
-            for (String arrayDeEstilo : arrayDeEstilos) {
-                long id = Long.parseLong(arrayDeEstilo);
-                Estilo estilo = repositorioDeEstilos.findByEntityId(id);
-                if (!listaDeEstilos.contains(estilo)) {
-                    listaDeEstilos.add(estilo);
-                }
-            }
-        }
-        return listaDeEstilos;
-    }
-
-    @Transactional
-    private static List<Instrumento> getDadosInstrumentosSelecionados() {
-        repositorioDeInstrumentos = RepositorioDeInstrumentos.getInstance();
-        Map<String, String[]> multipleData = request().body().asFormUrlEncoded();
-
-        List<Instrumento> listaDeInstrumentos = new ArrayList<>();
-        String[] arrayformInstrumentos = multipleData.get("instrumentos");
-
-        if(arrayformInstrumentos != null) {
-            for (String arrayformInstrumento : arrayformInstrumentos) {
-                long id = Long.parseLong(arrayformInstrumento);
-                Instrumento instrumento = repositorioDeInstrumentos.findByEntityId(id);
-                if (!listaDeInstrumentos.contains(instrumento)) {
-                    listaDeInstrumentos.add(instrumento);
-                }
-            }
-        }
-        return listaDeInstrumentos;
-    }
+	
+	@Transactional
+	public static Result anuncios(int page, int pageSize, boolean check) {
+		if(check) {
+			postRepository = PosterRepository.getInstance();
+			adverts = postRepository.findAll();
+		}
+		
+		page = page >= FIRST_PAGE ? page : FIRST_PAGE;
+		pageSize = pageSize >= FIRST_PAGE ? pageSize : PosterRepository.DEFAULT_RESULTS;
+				
+		long posterNumber = adverts.size();
+		if(page > (posterNumber / pageSize)) {
+			page = (int) 
+				(Math.ceil(posterNumber / Float.parseFloat(String.valueOf(pageSize))));
+		}
+		
+		Collections.sort(adverts);
+		session("actualPage", String.valueOf(page));
+		
+		int fromIndex = (page - 1) * pageSize;
+		int toIndex = 
+			fromIndex + pageSize < adverts.size() ? fromIndex + pageSize : adverts.size();
+				
+		return ok(anuncios.render(adverts.subList(fromIndex, toIndex)));
+	}
+	
+	@Transactional
+	public static Result searchAd() {
+		postRepository = PosterRepository.getInstance();
+		Map<String, String> data = Form.form().bindFromRequest().data();
+		
+		String search = data.get("search");
+		String titulo = data.get("titulo");
+		String cidade = data.get("cidade");
+		String date = data.get("data");
+		String instrumento = data.get("instrumento");
+		String estilo = data.get("estilo");
+		String formarBanda = data.get("formar uma banda");
+		String tocarOcasionalmente = data.get("tocar ocasionalmente");
+		
+		if((search == null || search.trim().isEmpty()) && 
+				(formarBanda == null && tocarOcasionalmente == null)) {
+			flash("erro", " Pesquisa inválida, tente novamente.");
+			return redirect("anuncios");
+		}
+		
+		adverts = postRepository.findAll();
+		if(search != null && !search.trim().toLowerCase().isEmpty()) {
+			if(titulo != null) {
+				adverts = adverts.stream().filter(p -> 
+				search.trim().toLowerCase().contains(p.getTitle().trim().toLowerCase())).
+				collect(Collectors.toList());
+			}
+			if(cidade != null) {
+				adverts = adverts.stream().filter(p -> 
+				search.trim().toLowerCase().toLowerCase().contains(p.getUser().
+				getCity().trim().toLowerCase())).collect(Collectors.toList());
+			}
+			if(date != null) {
+				adverts = adverts.stream().filter(p -> 
+				search.trim().toLowerCase().contains(p.getDateFormat())).
+				collect(Collectors.toList());
+			}
+			if(instrumento != null) {
+				List<Poster> posterList = new ArrayList<>();
+				for(Poster poster : adverts) {
+					for(Instrument instrument : poster.getUser().getInstruments()) {
+						if(search.trim().toLowerCase().contains(
+								instrument.getNome().trim().toLowerCase())) {
+							
+							posterList.add(poster);
+							break;
+						}
+					}
+				}
+				adverts.clear();
+				adverts.addAll(posterList);
+				
+			}
+			if(estilo != null) {
+				List<Poster> posterList = new ArrayList<>();
+				for(Poster poster : adverts) {
+					for(Style style : poster.getUser().getGoodStyles()) {
+						if(search.trim().toLowerCase().contains(
+								style.getNome().trim().toLowerCase())) {
+							
+							posterList.add(poster);
+							break;
+						}
+					}
+				}
+				adverts.clear();
+				adverts.addAll(posterList);
+			}
+		}
+		if(formarBanda != null && tocarOcasionalmente == null) {
+			adverts = adverts.stream().filter(p -> 
+			formarBanda.trim().contains(p.getSearchFor().trim()))
+			.collect(Collectors.toList());
+		}
+		if(formarBanda == null && tocarOcasionalmente != null) {
+			adverts = adverts.stream().filter(p -> 
+			tocarOcasionalmente.trim().contains(p.getSearchFor().trim()))
+			.collect(Collectors.toList());
+		}
+		
+		if(adverts.isEmpty()) {
+			flash("notFound", "Nenhum anúncio encontrado com os parâmetros informados");
+			return redirect("anuncios");
+		}
+		
+		return ok(anuncios.render(adverts));
+	}
+	
+	@Transactional
+	public static Result sobre() {
+		return ok(sobre.render());
+	}
 }

@@ -3,19 +3,14 @@
 # ~~~~
 
 # Home page
-GET         /                             controllers.Application.index()
+GET     /                           controllers.Application.index()
+GET 	/sobre						controllers.Application.sobre()
+GET  	/publique					controllers.Application.publique()
+GET	    /anuncios					controllers.Application.anuncios(page: Integer ?=1, pagaSize: Integer ?=15, check: Boolean ?= true)
+GET		/anuncio/:id				controllers.Application.anuncio(id: Long)
 
-# Create page ad
-GET         /criaranuncio                 controllers.Application.criarAnuncio()
-POST        /criaranuncio                 controllers.Application.novoAnuncio()
-
-# Page list of ads
-GET         /listadeanuncios              controllers.Application.listaDeAnuncios()
-POST        /listadeanuncios/:item        controllers.Application.pesquisaAnuncios(item: String)
-
-# See page ad
-GET         /veranuncio/:id               controllers.Application.verAnuncio(id: Long)
-POST        /veranuncio/:id/delete        controllers.Application.removerAnuncio(id: Long)
+POST    /publique					controllers.Application.createAd()
+POST	/anuncios					controllers.Application.searchAd()
 
 # Map static resources from the /public folder to the /assets URL path
-GET         /assets/*file                 controllers.Assets.at(path="/public", file)
+GET     /assets/*file               controllers.Assets.at(path="/public", file)

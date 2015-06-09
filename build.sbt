@@ -8,13 +8,14 @@ scalaVersion := "2.11.6"
 
 libraryDependencies ++= Seq(
   javaJdbc,
-  javaEbean,
+  javaJpa,
+  javaCore,
   cache,
   javaWs,
-  javaJpa,
   "org.apache.directory.api" % "api-all" % "1.0.0-M14",
   "postgresql" % "postgresql" % "9.1-901-1.jdbc4",
   "org.hibernate" % "hibernate-core" % "4.2.3.Final",
-  "org.hibernate" % "hibernate-entitymanager" % "4.2.3.Final"
-
+  "org.hibernate" % "hibernate-entitymanager" % "4.2.3.Final",
+  "net.sourceforge.htmlunit" % "htmlunit" % "2.14" % "test"
 )
+
