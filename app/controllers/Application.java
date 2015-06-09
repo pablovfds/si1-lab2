@@ -1,19 +1,26 @@
 package controllers;
 
+import models.entity.Instrument;
+import models.entity.Poster;
+import models.entity.Style;
+import models.entity.User;
+import models.exception.NewAdException;
+import models.repository.InstrumentRepository;
+import models.repository.PosterRepository;
+import models.repository.StyleRepository;
+import play.data.Form;
+import play.db.jpa.Transactional;
+import play.mvc.Controller;
+import play.mvc.Result;
+import views.html.anuncios;
+import views.html.index;
+import views.html.publique;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
-import play.data.Form;
-import play.db.jpa.Transactional;
-import play.mvc.Controller;
-import play.mvc.Result;
-import views.html.*;
-import models.entity.*;
-import models.exception.*;
-import models.repository.*;
 
 
 public class Application extends Controller {
@@ -42,18 +49,14 @@ public class Application extends Controller {
 		postRepository = PosterRepository.getInstance();
 		Map<String, String> data = Form.form().bindFromRequest().data();
 		
-		// Informações do Anúncio
+
 		String titulo = data.get("titulo");
 		String descrição = data.get("descricao");
-		
-		//Informamões do Anunciante
 		String email = data.get("email");
 		String cidade = data.get("city");
 		String bairro = data.get("bairro");
 		String perfil = data.get("perfil");
 		String interesse = data.get("interesse");
-		
-		//Multi selected Option about advertiser
 		List<Style> badStyles = getStyleSelectedData("badSty[]");
 		List<Style> goodStyles = getStyleSelectedData("goodSty[]");
 		List<Instrument> myInstruments = getInstrumentSelectedData(); 
@@ -230,10 +233,5 @@ public class Application extends Controller {
 		}
 		
 		return ok(anuncios.render(adverts));
-	}
-	
-	@Transactional
-	public static Result sobre() {
-		return ok(sobre.render());
 	}
 }
