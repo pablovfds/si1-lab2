@@ -105,7 +105,7 @@ public class Global extends GlobalSettings {
 		Calendar date = Calendar.getInstance();
 		
 		String title = "";
-		String description = "Teste básico para um POST de um anúncio!";
+		String description = "Teste de um anúncio!";
 		String email = "";
 		String city = "Cidade Test";
 		String neighborhood = "Bairro Teste";

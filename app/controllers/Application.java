@@ -12,9 +12,9 @@ import play.data.Form;
 import play.db.jpa.Transactional;
 import play.mvc.Controller;
 import play.mvc.Result;
-import views.html.anuncios;
+import views.html.listadeanuncios;
 import views.html.index;
-import views.html.publique;
+import views.html.criarAnuncio;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -23,14 +23,16 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 
-public class Application extends Controller {
+public class
+
+		Application extends Controller {
 	
 	private static final int FIRST_PAGE = 1;
-	private static List<Poster> adverts;
-	
-	private static StyleRepository styleRepository;
-	private static PosterRepository postRepository;
-	private static InstrumentRepository instrumentRepository;
+	private static List<Poster> listaDeAnuncios;
+	private static InstrumentRepository instrumentos;
+	private static StyleRepository estilos;
+	private static PosterRepository anuncios;
+
 	
 	@Transactional
     public static Result index() {
@@ -39,14 +41,14 @@ public class Application extends Controller {
 	
 	@Transactional
 	public static Result publique() {
-		instrumentRepository = InstrumentRepository.getInstance();
-		styleRepository = StyleRepository.getInstance();
-		return ok(publique.render(styleRepository.findAll(), instrumentRepository.findAll()));
+		instrumentos = InstrumentRepository.getInstance();
+		estilos = StyleRepository.getInstance();
+		return ok(criarAnuncio.render(estilos.findAll(), instrumentos.findAll()));
 	}
 			
 	@Transactional
 	public static Result criarAnuncio() {
-		postRepository = PosterRepository.getInstance();
+		anuncios = PosterRepository.getInstance();
 		Map<String, String> data = Form.form().bindFromRequest().data();
 		
 
@@ -64,8 +66,8 @@ public class Application extends Controller {
 		try {			
 			User user = new User(email, perfil, cidade, bairro, myInstruments, badStyles, goodStyles);
 			Poster poster = new Poster(titulo, descrição, interesse, user);
-			postRepository.persist(poster);
-			postRepository.flush();
+			anuncios.persist(poster);
+			anuncios.flush();
 			
 			flash("success", String.valueOf(poster.getCode()));
 		} catch(NewAdException e) {
@@ -78,7 +80,7 @@ public class Application extends Controller {
 			
 	@Transactional
 	private static List<Style> getStyleSelectedData(String key) {
-		styleRepository = StyleRepository.getInstance();
+		estilos = StyleRepository.getInstance();
 		Map<String, String[]> multipleData = request().body().asFormUrlEncoded();
 		
 		List<Style> styleList = new ArrayList<Style>();
@@ -87,7 +89,7 @@ public class Application extends Controller {
 		if(requestStyleArray != null) {
 			for(int i = 0; i < requestStyleArray.length; i++) {
 				long id = Long.parseLong(requestStyleArray[i]);
-				Style style = styleRepository.findByEntityId(id);
+				Style style = estilos.findByEntityId(id);
 				if(!styleList.contains(style)) {
 					styleList.add(style);
 				}
@@ -98,7 +100,7 @@ public class Application extends Controller {
 	
 	@Transactional
 	private static List<Instrument> getInstrumentSelectedData() {
-		instrumentRepository = InstrumentRepository.getInstance();
+		instrumentos = InstrumentRepository.getInstance();
 		Map<String, String[]> multipleData = request().body().asFormUrlEncoded();
 		
 		List<Instrument> instrumentList = new ArrayList<>();
@@ -107,7 +109,7 @@ public class Application extends Controller {
 		if(requestInstrumentArray != null) {
 			for(int i = 0; i < requestInstrumentArray.length; i++) {
 				long id = Long.parseLong(requestInstrumentArray[i]);
-				Instrument instrument = instrumentRepository.findByEntityId(id);
+				Instrument instrument = instrumentos.findByEntityId(id);
 				if(!instrumentList.contains(instrument)) {
 					instrumentList.add(instrument);
 				}
@@ -124,32 +126,32 @@ public class Application extends Controller {
 	@Transactional
 	public static Result anuncios(int page, int pageSize, boolean check) {
 		if(check) {
-			postRepository = PosterRepository.getInstance();
-			adverts = postRepository.findAll();
+			anuncios = PosterRepository.getInstance();
+			listaDeAnuncios = anuncios.findAll();
 		}
 		
 		page = page >= FIRST_PAGE ? page : FIRST_PAGE;
 		pageSize = pageSize >= FIRST_PAGE ? pageSize : PosterRepository.DEFAULT_RESULTS;
 				
-		long posterNumber = adverts.size();
+		long posterNumber = listaDeAnuncios.size();
 		if(page > (posterNumber / pageSize)) {
 			page = (int) 
 				(Math.ceil(posterNumber / Float.parseFloat(String.valueOf(pageSize))));
 		}
 		
-		Collections.sort(adverts);
+		Collections.sort(listaDeAnuncios);
 		session("actualPage", String.valueOf(page));
 		
 		int fromIndex = (page - 1) * pageSize;
 		int toIndex = 
-			fromIndex + pageSize < adverts.size() ? fromIndex + pageSize : adverts.size();
+			fromIndex + pageSize < listaDeAnuncios.size() ? fromIndex + pageSize : listaDeAnuncios.size();
 				
-		return ok(anuncios.render(adverts.subList(fromIndex, toIndex)));
+		return ok(listadeanuncios.render(listaDeAnuncios.subList(fromIndex, toIndex)));
 	}
 	
 	@Transactional
 	public static Result buscarAnuncio() {
-		postRepository = PosterRepository.getInstance();
+		anuncios = PosterRepository.getInstance();
 		Map<String, String> data = Form.form().bindFromRequest().data();
 		
 		String search = data.get("search");
@@ -167,26 +169,26 @@ public class Application extends Controller {
 			return redirect("anuncios");
 		}
 		
-		adverts = postRepository.findAll();
+		listaDeAnuncios = anuncios.findAll();
 		if(search != null && !search.trim().toLowerCase().isEmpty()) {
 			if(titulo != null) {
-				adverts = adverts.stream().filter(p -> 
+				listaDeAnuncios = listaDeAnuncios.stream().filter(p ->
 				search.trim().toLowerCase().contains(p.getTitle().trim().toLowerCase())).
 				collect(Collectors.toList());
 			}
 			if(cidade != null) {
-				adverts = adverts.stream().filter(p -> 
+				listaDeAnuncios = listaDeAnuncios.stream().filter(p ->
 				search.trim().toLowerCase().toLowerCase().contains(p.getUser().
 				getCity().trim().toLowerCase())).collect(Collectors.toList());
 			}
 			if(date != null) {
-				adverts = adverts.stream().filter(p -> 
+				listaDeAnuncios = listaDeAnuncios.stream().filter(p ->
 				search.trim().toLowerCase().contains(p.getDateFormat())).
 				collect(Collectors.toList());
 			}
 			if(instrumento != null) {
 				List<Poster> posterList = new ArrayList<>();
-				for(Poster poster : adverts) {
+				for(Poster poster : listaDeAnuncios) {
 					for(Instrument instrument : poster.getUser().getInstruments()) {
 						if(search.trim().toLowerCase().contains(
 								instrument.getNome().trim().toLowerCase())) {
@@ -196,13 +198,13 @@ public class Application extends Controller {
 						}
 					}
 				}
-				adverts.clear();
-				adverts.addAll(posterList);
+				listaDeAnuncios.clear();
+				listaDeAnuncios.addAll(posterList);
 				
 			}
 			if(estilo != null) {
 				List<Poster> posterList = new ArrayList<>();
-				for(Poster poster : adverts) {
+				for(Poster poster : listaDeAnuncios) {
 					for(Style style : poster.getUser().getGoodStyles()) {
 						if(search.trim().toLowerCase().contains(
 								style.getNome().trim().toLowerCase())) {
@@ -212,26 +214,26 @@ public class Application extends Controller {
 						}
 					}
 				}
-				adverts.clear();
-				adverts.addAll(posterList);
+				listaDeAnuncios.clear();
+				listaDeAnuncios.addAll(posterList);
 			}
 		}
 		if(formarBanda != null && tocarOcasionalmente == null) {
-			adverts = adverts.stream().filter(p -> 
+			listaDeAnuncios = listaDeAnuncios.stream().filter(p ->
 			formarBanda.trim().contains(p.getSearchFor().trim()))
 			.collect(Collectors.toList());
 		}
 		if(formarBanda == null && tocarOcasionalmente != null) {
-			adverts = adverts.stream().filter(p -> 
+			listaDeAnuncios = listaDeAnuncios.stream().filter(p ->
 			tocarOcasionalmente.trim().contains(p.getSearchFor().trim()))
 			.collect(Collectors.toList());
 		}
 		
-		if(adverts.isEmpty()) {
+		if(listaDeAnuncios.isEmpty()) {
 			flash("notFound", "Nenhum anúncio encontrado com os parâmetros informados");
 			return redirect("anuncios");
 		}
 		
-		return ok(anuncios.render(adverts));
+		return ok(listadeanuncios.render(listaDeAnuncios));
 	}
 }
